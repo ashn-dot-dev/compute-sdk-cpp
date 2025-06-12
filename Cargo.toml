@@ -1,0 +1,15 @@
+[package]
+name = "fastly"
+version = "0.1.0"
+authors = ["Kat Marchán <kat.marchan@fastly.com>"]
+edition = "2024"
+
+[dependencies]
+cxx = "1.0.158"
+fastly = "0.11.4"
+
+[build-dependencies]
+cxx-build = "1.0"
+
+[lib]
+crate-type = ["staticlib"]
