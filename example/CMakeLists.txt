@@ -1,3 +1,6 @@
+set(CMAKE_C_COMPILER "/opt/wasi-sdk-25.0/bin/clang")
+set(CMAKE_CXX_COMPILER "/opt/wasi-sdk-25.0/bin/clang++")
+
 if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif ()
@@ -5,7 +8,7 @@ endif ()
 project(cxx_example)
 cmake_minimum_required(VERSION 3.15)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 option(ENABLE_LTO "Enable cross language linking time optimization" ON)
 if(ENABLE_LTO)
@@ -19,6 +22,8 @@ if(ENABLE_LTO)
       message(STATUS "IPO / LTO not supported: <${error}>")
   endif()
 endif()
+
+add_link_options(-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi)
 
 add_subdirectory(.. fastly)
 

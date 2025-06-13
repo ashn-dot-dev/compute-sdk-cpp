@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(compute-sdk-cpp)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 set(TARGET_TRIPLE wasm32-wasip1)
 
@@ -22,6 +22,7 @@ if (DEFINED ENV{CARGO_BUILD_TARGET})
 endif()
 
 set(CC "/opt/wasi-sdk-25.0/bin/clang")
+set(ENV{CC} "/opt/wasi-sdk-25.0/bin/clang")
 set(CXX "/opt/wasi-sdk-25.0/bin/clang++")
 
 if(ENABLE_LTO)
