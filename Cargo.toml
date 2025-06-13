@@ -13,3 +13,6 @@ cxx-build = "1.0"
 
 [lib]
 crate-type = ["staticlib"]
+
+[target.wasm32-wasip2.dependencies]
+link-cplusplus = { version = "1", features = ["nothing"] }

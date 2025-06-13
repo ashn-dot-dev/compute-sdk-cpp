@@ -1,10 +1,14 @@
 # From https://github.com/XiangpengHao/cxx-cmake-example/blob/master/fastly/CMakeLists.txt
+cmake_minimum_required(VERSION 3.15)
+project(compute-sdk-cpp)
+
+set (CMAKE_CXX_STANDARD 11)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CARGO_CMD cargo build --verbose)
+    set(CARGO_CMD cargo build --target=wasm32-wasip2 --verbose)
     set(TARGET_DIR "debug")
 else ()
-    set(CARGO_CMD cargo build --release --verbose)
+    set(CARGO_CMD cargo build --target=wasm32-wasip2 --release --verbose)
     set(TARGET_DIR "release")
 endif ()
 
@@ -15,10 +19,16 @@ if (DEFINED ENV{CARGO_BUILD_TARGET})
     set(TARGET_DIR "$ENV{CARGO_BUILD_TARGET}/${TARGET_DIR}")
 endif()
 
+set(CC "/opt/wasi-sdk-25.0/bin/clang")
+set(CXX "/opt/wasi-sdk-25.0/bin/clang++")
+
 if(ENABLE_LTO)
     set(CFLAGS "-flto=thin -O0")
-    set(CXXFLAGS "-flto=thin -O0")
-    set(RUST_FLAGS "-Clinker-plugin-lto" "-Clinker=${CMAKE_CURRENT_SOURCE_DIR}/build-workaround.sh" "-Clink-arg=-fuse-ld=lld")
+    set(CXXFLAGS "-flto=thin -O0" "--sysroot=/opt/wasi-sdk-25.0/share/wasi-sysroot" "-DRUST_CXX_NO_EXCEPTIONS")
+    set(RUST_FLAGS "-Clinker-plugin-lto" "-Clinker=${CMAKE_CURRENT_SOURCE_DIR}/build-workaround.sh" "-Clink-arg=-fuse-ld=lld" "-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
+else()
+    set(CXXFLAGS "--sysroot=/opt/wasi-sdk-25.0/share/wasi-sysroot -DRUST_CXX_NO_EXCEPTIONS")
+    set(RUST_FLAGS "-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
 endif()
 
 set(FASTLY_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/libfastly.a")
@@ -27,10 +37,9 @@ set(FASTLY_CXX "${CMAKE_CURRENT_BINARY_DIR}/fastly.cpp")
 add_library(fastly STATIC ${FASTLY_CXX})
 add_custom_command(
     OUTPUT ${FASTLY_CXX}
-    COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
+    COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly/src/lib.rs.cc ${FASTLY_CXX}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly/src/lib.rs.h ${CMAKE_CURRENT_BINARY_DIR}/fastly.h
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly/src/lib.rs.h ${CMAKE_BINARY_DIR}/libfastly.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

@@ -220,6 +220,7 @@ dependencies = [
  "cxx",
  "cxx-build",
  "fastly 0.11.4",
+ "link-cplusplus",
 ]
 
 [[package]]
