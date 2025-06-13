@@ -2,7 +2,7 @@
 
 Creates a static library for C++ usage.
 
-## Building
+See `example/` on usage.
 
 ### Requirements
 
@@ -11,17 +11,17 @@ Creates a static library for C++ usage.
 * `lld`
 * `cmake`
 * `make`
+* `wasi-sdk-25.0` installed as `/opt/wasi-sdk-25.0` (yes, I'll fix this)
+* `just`
 
-### Preparing
-
-```sh
-cmake -S . -B fastly -DENABLE_LTO=ON -DCMAKE_BUILD_TYPE=Release
-```
-
-### Actually Building
+### Building Static library
 
 ```sh
-make -j
+just
 ```
 
-You'll get a `fastly.a`.
+### Building example
+
+```sh
+just example
+```
