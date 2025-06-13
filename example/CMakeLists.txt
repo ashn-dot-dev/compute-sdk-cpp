@@ -20,10 +20,7 @@ if(ENABLE_LTO)
   endif()
 endif()
 
-include_directories(${CMAKE_BINARY_DIR}/fastly)
-include_directories(../include)
-
-add_subdirectory(.. fastly/example)
+add_subdirectory(.. fastly)
 
 add_executable(main main.cpp)
 

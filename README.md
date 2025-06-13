@@ -7,8 +7,6 @@ See `example/` on usage.
 ### Requirements
 
 * `rustc`/`cargo`, which can be installed through [`rustup`](https://rustup.sh)
-* `clang`
-* `lld`
 * `cmake`
 * `make`
 * `wasi-sdk-25.0` installed as `/opt/wasi-sdk-25.0` (yes, I'll fix this)
