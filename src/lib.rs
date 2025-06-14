@@ -16,6 +16,10 @@ pub fn create_request(method: ffi::Method, url: &CxxString) -> Box<Request> {
     Box::new(Request(fastly::Request::new(method, url.to_string_lossy().as_ref()))) 
 }
 
+pub fn get_client_request() -> Box<Request> {
+    Box::new(Request(fastly::Request::from_client()))
+}
+
 impl Request {
     pub fn get_header_all(&self, name: &CxxString) -> Box<HeaderIter> {
         // Yeah. Sorry. Lifetimes :/
@@ -28,6 +32,16 @@ impl Request {
         }).collect::<Vec<UniquePtr<CxxVector<u8>>>>();
         Box::new(HeaderIter(Box::new(iter.into_iter())))
     }
+}
+
+pub struct Response(fastly::Response);
+
+pub fn create_response() -> Box<Response> {
+    Box::new(Response(fastly::Response::new()))
+}
+
+pub fn send_response(response: Box<Response>) {
+    response.0.send_to_client();
 }
 
 impl From<ffi::Method> for fastly::http::Method {
@@ -83,7 +97,11 @@ mod ffi {
         fn next(self: &mut HeaderIter) -> UniquePtr<CxxVector<u8>>;
         type Request;
         fn create_request(method: Method, url: &CxxString) -> Box<Request>;
+        fn get_client_request() -> Box<Request>;
         fn get_header_all(self: &Request, name: &CxxString) -> Box<HeaderIter>;
+        type Response;
+        fn create_response() -> Box<Response>;
+        fn send_response(response: Box<Response>);
     }
     
     // unsafe extern "C++" {
