@@ -4,7 +4,7 @@ project(compute-sdk-cpp)
 
 if(!WASI_SDK)
     set(WASI_SDK "/opt/wasi-sdk")
-endif() 
+endif()
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -38,22 +38,36 @@ else()
     set(RUST_FLAGS "-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
 endif()
 
-set(FASTLY_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_TRIPLE}/${TARGET_DIR}/libfastly.a")
+set(FASTLY_SYS_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_TRIPLE}/${TARGET_DIR}/libfastly_sys.a")
 
-set(FASTLY_CXX "${CMAKE_CURRENT_BINARY_DIR}/fastly.cpp")
-add_library(fastly STATIC ${FASTLY_CXX})
+set(FASTLY_SYS_CXX "${CMAKE_CURRENT_BINARY_DIR}/fastly-sys.cpp")
+file(GLOB FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.cpp")
+
+add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
+add_library(fastly STATIC ${FASTLY_CXX} fastly-sys)
+
 add_custom_command(
-    OUTPUT ${FASTLY_CXX} ${FASTLY_LIB} ${CMAKE_CURRENT_BINARY_DIR}/fastly.h ${CMAKE_CURRENT_BINARY_DIR}/util.h
+    OUTPUT ${FASTLY_SYS_CXX} ${FASTLY_SYS_LIB} ${CMAKE_CURRENT_BINARY_DIR}/fastly/fastly-sys.h ${CMAKE_CURRENT_BINARY_DIR}/util.h
     COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly/src/lib.rs.cc ${FASTLY_CXX}
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly/src/lib.rs.h ${CMAKE_CURRENT_BINARY_DIR}/fastly.h
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.cc ${FASTLY_SYS_CXX}
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.h ${CMAKE_CURRENT_BINARY_DIR}/fastly-sys.h
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/include/util.h ${CMAKE_CURRENT_BINARY_DIR}/util.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(fastly ${FASTLY_LIB})
-target_include_directories(fastly INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
 
-add_test(NAME fastly_test 
+file(GLOB FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h")
+foreach(f ${FASTLY_HEADERS})
+    file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp" ${f})
+    configure_file(${f} ${CMAKE_CURRENT_BINARY_DIR}/${fr} COPYONLY)
+    list(APPEND incls "#include \"${fr}\"\n")
+endforeach()
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fastly.h ${incls})
+
+target_include_directories(fastly PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+target_link_libraries(fastly ${FASTLY_SYS_LIB})
+
+add_test(NAME fastly_test
     COMMAND cargo test
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

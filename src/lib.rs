@@ -1,6 +1,5 @@
 use cxx::{CxxString, CxxVector, UniquePtr};
 
-
 pub struct HeaderIter(Box<dyn Iterator<Item = UniquePtr<CxxVector<u8>>>>);
 
 impl HeaderIter {
@@ -78,8 +77,9 @@ impl From<fastly::http::Method> for ffi::Method {
     }
 }
 
-#[cxx::bridge(namespace = "fastly")]
+#[cxx::bridge(namespace = "fastly::sys")]
 mod ffi {
+    #[namespace = "fastly"]
     pub enum Method {
         GET,
         POST,

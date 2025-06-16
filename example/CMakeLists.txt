@@ -1,16 +1,17 @@
+cmake_minimum_required(VERSION 3.15)
 if(!WASI_SDK)
     set(WASI_SDK "/opt/wasi-sdk")
 endif() 
 
 set(CMAKE_C_COMPILER "${WASI_SDK}/bin/clang")
 set(CMAKE_CXX_COMPILER "${WASI_SDK}/bin/clang++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 
 if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif ()
 
 project(cxx_example)
-cmake_minimum_required(VERSION 3.15)
 
 set (CMAKE_CXX_STANDARD 17)
 
@@ -33,4 +34,5 @@ add_subdirectory(.. fastly)
 
 add_executable(main main.cpp)
 
+target_include_directories(main PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(main fastly)

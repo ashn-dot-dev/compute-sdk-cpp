@@ -215,16 +215,6 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
 name = "fastly"
-version = "0.1.0"
-dependencies = [
- "cxx",
- "cxx-build",
- "fastly 0.11.4",
- "link-cplusplus",
-]
-
-[[package]]
-name = "fastly"
 version = "0.11.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b0f0d6baa01213290eeeb8742bbff3cbd2abc447e360bf2a96a911b58412424c"
@@ -235,7 +225,7 @@ dependencies = [
  "elsa",
  "fastly-macros",
  "fastly-shared",
- "fastly-sys",
+ "fastly-sys 0.11.4",
  "http",
  "itertools",
  "lazy_static",
@@ -270,6 +260,16 @@ checksum = "4a47030cf7bae93c0305f76541896c1b86dbf3edde21bb1cf938e05f1fb30f78"
 dependencies = [
  "bitflags",
  "http",
+]
+
+[[package]]
+name = "fastly-sys"
+version = "0.1.0"
+dependencies = [
+ "cxx",
+ "cxx-build",
+ "fastly",
+ "link-cplusplus",
 ]
 
 [[package]]
