@@ -1,5 +1,9 @@
-set(CMAKE_C_COMPILER "/opt/wasi-sdk-25.0/bin/clang")
-set(CMAKE_CXX_COMPILER "/opt/wasi-sdk-25.0/bin/clang++")
+if(!WASI_SDK)
+    set(WASI_SDK "/opt/wasi-sdk")
+endif() 
+
+set(CMAKE_C_COMPILER "${WASI_SDK}/bin/clang")
+set(CMAKE_CXX_COMPILER "${WASI_SDK}/bin/clang++")
 
 if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
@@ -23,7 +27,7 @@ if(ENABLE_LTO)
   endif()
 endif()
 
-add_link_options(-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi)
+add_link_options(-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi)
 
 add_subdirectory(.. fastly)
 

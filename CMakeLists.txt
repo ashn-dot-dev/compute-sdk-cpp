@@ -2,6 +2,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(compute-sdk-cpp)
 
+if(!WASI_SDK)
+    set(WASI_SDK "/opt/wasi-sdk")
+endif() 
+
 set (CMAKE_CXX_STANDARD 17)
 
 set(TARGET_TRIPLE wasm32-wasip1)
@@ -21,17 +25,17 @@ if (DEFINED ENV{CARGO_BUILD_TARGET})
     set(TARGET_DIR "$ENV{CARGO_BUILD_TARGET}/${TARGET_DIR}")
 endif()
 
-set(CC "/opt/wasi-sdk-25.0/bin/clang")
-set(ENV{CC} "/opt/wasi-sdk-25.0/bin/clang")
-set(CXX "/opt/wasi-sdk-25.0/bin/clang++")
+set(CC "${WASI_SDK}/bin/clang")
+set(ENV{CC} "${WASI_SDK}/bin/clang")
+set(CXX "${WASI_SDK}/bin/clang++")
 
 if(ENABLE_LTO)
     set(CFLAGS "-flto=thin -Oz")
-    set(CXXFLAGS "-flto=thin -Oz --sysroot=/opt/wasi-sdk-25.0/share/wasi-sysroot -DRUST_CXX_NO_EXCEPTIONS")
-    set(RUST_FLAGS "-Clinker-plugin-lto" "-Clinker=${CMAKE_CURRENT_SOURCE_DIR}/build-workaround.sh" "-Clink-arg=-fuse-ld=lld" "-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
+    set(CXXFLAGS "-flto=thin -Oz --sysroot=${WASI_SDK}/share/wasi-sysroot -DRUST_CXX_NO_EXCEPTIONS")
+    set(RUST_FLAGS "-Clinker-plugin-lto" "-Clinker=${CMAKE_CURRENT_SOURCE_DIR}/build-workaround.sh" "-Clink-arg=-fuse-ld=lld" "-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
 else()
-    set(CXXFLAGS "--sysroot=/opt/wasi-sdk-25.0/share/wasi-sysroot -DRUST_CXX_NO_EXCEPTIONS")
-    set(RUST_FLAGS "-L/opt/wasi-sdk-25.0/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
+    set(CXXFLAGS "--sysroot=${WASI_SDK}/share/wasi-sysroot -DRUST_CXX_NO_EXCEPTIONS")
+    set(RUST_FLAGS "-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi" "-lstatic=c++" "-lstatic=c++abi")
 endif()
 
 set(FASTLY_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_TRIPLE}/${TARGET_DIR}/libfastly.a")
