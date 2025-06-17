@@ -1,7 +1,7 @@
 #ifndef FASTLY_REQUEST_H
 #define FASTLY_REQUEST_H
 
-#include "fastly-sys.h"
+#include "sdk-sys.h"
 #include "headers.h"
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef FASTLY_RESPONSE_H
 #define FASTLY_RESPONSE_H
 
-#include "fastly-sys.h"
+#include "sdk-sys.h"
 #include <string>
 
 namespace fastly {

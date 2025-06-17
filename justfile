@@ -1,25 +1,26 @@
 default: build
 
+build-dir := "target"
 wasi-sdk := "/opt/wasi-sdk"
 default-example := "basic"
 
 clean:
-    rm -rf fastly
+    rm -rf .cache {{build-dir}} target
     
 example name=default-example: (build-example name)
-    fastly compute serve -C examples --file ../fastly/examples/main
+    fastly compute serve -C examples --file ../{{build-dir}}/examples/{{name}}.wasm
 
 strip-example name=default-example: (build-example name)
-    {{wasi-sdk}}/bin/strip ./fastly/examples/main
+    {{wasi-sdk}}/bin/strip ./{{build-dir}}/examples/{{name}}.wasm
     
 build-example name=default-example: (cmake-example name)
-    cmake --build fastly/examples
+    cmake --build {{build-dir}}/examples
     
 cmake-example name=default-example:
-    cmake -S ./examples -B fastly/examples -DWASI_SDK={{wasi-sdk}} -DEXAMPLE_NAME={{name}} -DENABLE_LTO=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE={{wasi-sdk}}/share/cmake/wasi-sdk-p1.cmake
+    cmake -S ./examples -B {{build-dir}}/examples -DWASI_SDK={{wasi-sdk}} -DEXAMPLE_NAME={{name}} -DENABLE_LTO=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE={{wasi-sdk}}/share/cmake/wasi-sdk-p1.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 
     
 build: cmake
-    cmake --build fastly
+    cmake --build {{build-dir}}
 
 cmake:
-    cmake -S . -B fastly -DWASI_SDK={{wasi-sdk}} -DENABLE_LTO=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE={{wasi-sdk}}/share/cmake/wasi-sdk-p1.cmake
+    cmake -S . -B {{build-dir}} -DWASI_SDK={{wasi-sdk}} -DENABLE_LTO=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE={{wasi-sdk}}/share/cmake/wasi-sdk-p1.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 

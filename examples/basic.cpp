@@ -5,7 +5,7 @@
 #include "fastly/request.h"
 #include "fastly/response.h"
 // or just pull everything in with:
-// #include "fastly/fastly.h"
+// #include "fastly/sdk.h"
 
 using namespace std::string_literals;
 

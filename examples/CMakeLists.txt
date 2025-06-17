@@ -6,6 +6,12 @@ if(!EXAMPLE_NAME)
     set(EXAMPLE_NAME "basic")
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(TARGET_DIR "debug")
+else ()
+    set(TARGET_DIR "release")
+endif ()
+
 set(CMAKE_C_COMPILER "${WASI_SDK}/bin/clang")
 set(CMAKE_CXX_COMPILER "${WASI_SDK}/bin/clang++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
@@ -33,9 +39,11 @@ endif()
 
 add_link_options(-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi)
 
-add_subdirectory(.. fastly)
+add_subdirectory(.. ../../target)
 
-add_executable(main ${EXAMPLE_NAME}.cpp)
+add_executable(${EXAMPLE_NAME} ${EXAMPLE_NAME}.cpp)
 
-target_include_directories(main PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(main fastly)
+set_target_properties(${EXAMPLE_NAME} PROPERTIES SUFFIX .wasm)
+target_include_directories(${EXAMPLE_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../../${TARGET_DIR})
+target_link_libraries(${EXAMPLE_NAME} fastly)
+

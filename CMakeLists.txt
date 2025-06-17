@@ -18,12 +18,7 @@ else ()
     set(TARGET_DIR "release")
 endif ()
 
-# If the user is cross compiling to a different target, update the location of the target directory
-# *Note*: Make sure to install the target with rustup, as well as setting the proper environment variables, such as CC, HOST_CC, CARGO_TARGET_<triple>_LINKER, ...
-# See https://doc.rust-lang.org/cargo/reference/environment-variables.html#configuration-environment-variables
-if (DEFINED ENV{CARGO_BUILD_TARGET})
-    set(TARGET_DIR "$ENV{CARGO_BUILD_TARGET}/${TARGET_DIR}")
-endif()
+set(DIST_DIR ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_DIR}/dist)
 
 set(CC "${WASI_SDK}/bin/clang")
 set(ENV{CC} "${WASI_SDK}/bin/clang")
@@ -46,25 +41,30 @@ file(GLOB FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.cpp")
 add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
 add_library(fastly STATIC ${FASTLY_CXX} fastly-sys)
 
-add_custom_command(
-    OUTPUT ${FASTLY_SYS_CXX} ${FASTLY_SYS_LIB} ${CMAKE_CURRENT_BINARY_DIR}/fastly/fastly-sys.h ${CMAKE_CURRENT_BINARY_DIR}/util.h
-    COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.cc ${FASTLY_SYS_CXX}
-    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.h ${CMAKE_CURRENT_BINARY_DIR}/fastly-sys.h
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/include/util.h ${CMAKE_CURRENT_BINARY_DIR}/util.h
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+set_target_properties(
+    fastly-sys fastly
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${DIST_DIR}
 )
 
+add_custom_command(
+    OUTPUT ${FASTLY_SYS_CXX} ${FASTLY_SYS_LIB} ${DIST_DIR}/fastly/sdk-sys.h ${DIST_DIR}/fastly/util.h
+    COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.cc ${FASTLY_SYS_CXX}
+    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.h ${DIST_DIR}/fastly/sdk-sys.h
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/include/util.h ${DIST_DIR}/fastly/util.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 file(GLOB FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h")
 foreach(f ${FASTLY_HEADERS})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp" ${f})
-    configure_file(${f} ${CMAKE_CURRENT_BINARY_DIR}/${fr} COPYONLY)
+    configure_file(${f} ${DIST_DIR}/fastly/${fr} COPYONLY)
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/fastly.h ${incls})
+file(WRITE ${DIST_DIR}/fastly/sdk.h ${incls})
 
-target_include_directories(fastly PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(fastly PUBLIC ${DIST_DIR} ${DIST_DIR}/fastly)
 
 target_link_libraries(fastly ${FASTLY_SYS_LIB})
 

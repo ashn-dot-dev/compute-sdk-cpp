@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "fastly-sys.h"
+#include "sdk-sys.h"
 
 namespace fastly {
 
