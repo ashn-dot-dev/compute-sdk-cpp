@@ -18,11 +18,21 @@ See `example/` on usage.
 
 \*\*\* The build script assumes you're installing `wasi-sdk` to `/opt/wasi-sdk`. You can specify a custom path using `--set wasi-sdk /path/to/wasi-sdk-dist` in `just`, or `-DWASI_SDK=/path/to/wasi-sdk-dist` if using `cmake` along.
 
-### Demo/Example
+### Example(s)
+
+To run the "hello world" example (see `./examples/basic.cpp`), you can use:
 
 ```sh
 just example
 ```
+
+To run any other examples, you can use:
+
+```sh
+just example example-name
+```
+
+Where `example-name` will refer to a corresponding `example-name.cpp` in the `examples/` directory. Every example will have appropriate links and explanations to what it's doing.
 
 ### Building Static library
 

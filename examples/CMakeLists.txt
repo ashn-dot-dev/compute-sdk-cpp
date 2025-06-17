@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.15)
 if(!WASI_SDK)
     set(WASI_SDK "/opt/wasi-sdk")
 endif() 
+if(!EXAMPLE_NAME)
+    set(EXAMPLE_NAME "basic")
+endif()
 
 set(CMAKE_C_COMPILER "${WASI_SDK}/bin/clang")
 set(CMAKE_CXX_COMPILER "${WASI_SDK}/bin/clang++")
@@ -32,7 +35,7 @@ add_link_options(-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi)
 
 add_subdirectory(.. fastly)
 
-add_executable(main main.cpp)
+add_executable(main ${EXAMPLE_NAME}.cpp)
 
 target_include_directories(main PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(main fastly)
