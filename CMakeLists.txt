@@ -36,7 +36,7 @@ endif()
 set(FASTLY_SYS_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_TRIPLE}/${TARGET_DIR}/libfastly_sys.a")
 
 set(FASTLY_SYS_CXX "${CMAKE_CURRENT_BINARY_DIR}/fastly-sys.cpp")
-file(GLOB FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.cpp")
+file(GLOB_RECURSE FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.cpp")
 
 add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
 add_library(fastly STATIC ${FASTLY_CXX} fastly-sys)
@@ -47,8 +47,11 @@ set_target_properties(
     ARCHIVE_OUTPUT_DIRECTORY ${DIST_DIR}
 )
 
+file(GLOB_RECURSE RUST_SRC ${CMAKE_CURRENT_COURSE_DIR}/src/**/*.rs)
+
 add_custom_command(
     OUTPUT ${FASTLY_SYS_CXX} ${FASTLY_SYS_LIB} ${DIST_DIR}/fastly/sdk-sys.h ${DIST_DIR}/fastly/util.h
+    DEPENDS ${RUST_SRC}
     COMMAND CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR} CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.cc ${FASTLY_SYS_CXX}
     COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/cxxbridge/fastly-sys/src/lib.rs.h ${DIST_DIR}/fastly/sdk-sys.h
@@ -56,7 +59,7 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-file(GLOB FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h")
+file(GLOB_RECURSE FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.h")
 foreach(f ${FASTLY_HEADERS})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp" ${f})
     configure_file(${f} ${DIST_DIR}/fastly/${fr} COPYONLY)
@@ -64,7 +67,7 @@ foreach(f ${FASTLY_HEADERS})
 endforeach()
 file(WRITE ${DIST_DIR}/fastly/sdk.h ${incls})
 
-target_include_directories(fastly PUBLIC ${DIST_DIR} ${DIST_DIR}/fastly)
+target_include_directories(fastly PUBLIC ${DIST_DIR} ${DIST_DIR}/fastly ${DIST_DIR}/fastly/http)
 
 target_link_libraries(fastly ${FASTLY_SYS_LIB})
 

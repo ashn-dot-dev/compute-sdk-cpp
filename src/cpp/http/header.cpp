@@ -1,9 +1,9 @@
 #include <memory>
 #include <vector>
 
-#include "headers.h"
+#include "header.h"
 
-namespace fastly {
+namespace fastly::http {
 
 std::string HeaderIter::next() {
     std::unique_ptr<std::vector<uint8_t>> vec = this->iter->next();
