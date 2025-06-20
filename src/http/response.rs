@@ -1,6 +1,6 @@
 use cxx::CxxVector;
 
-pub struct Response(fastly::Response);
+pub struct Response(pub(crate) fastly::Response);
 
 pub fn m_static_http_response_new() -> Box<Response> {
     Box::new(Response(fastly::Response::new()))

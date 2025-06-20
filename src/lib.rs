@@ -36,13 +36,27 @@ mod ffi {
         
         // Static methods
         fn m_static_http_request_get(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_head(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_post(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_put(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_delete(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_connect(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_options(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_trace(url: &CxxString) -> Box<Request>;
+        fn m_static_http_request_patch(url: &CxxString) -> Box<Request>;
         fn m_static_http_request_new(method: Method, url: &CxxString) -> Box<Request>;
         fn m_static_http_request_from_client() -> Box<Request>;
         
         // Regular methods
+        fn m_http_request_send(request: Box<Request>, backend: &CxxString) -> Box<Response>;
+        fn is_from_client(&self) -> bool;
+        fn clone_without_body(&self) -> Box<Request>;
+        fn clone_with_body(&mut self) -> Box<Request>;
         fn get_header_all(&self, name: &CxxString) -> Box<HeaderIter>;
         fn set_auto_decompress_gzip(&mut self, gzip: bool);
         fn set_body(&mut self, body: &CxxVector<u8>);
+        fn has_body(&self) -> bool;
+        fn m_http_request_into_body_bytes(request: Box<Request>) -> UniquePtr<CxxVector<u8>>;
     }
     
     #[namespace = "fastly::sys::http"]
