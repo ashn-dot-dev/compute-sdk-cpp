@@ -126,6 +126,11 @@ mod ffi {
         fn set_query_string(&mut self, qs: &CxxString);
         fn remove_query(&mut self);
         fn get_client_ddos_detected(&self) -> *const bool;
+        fn set_pass(&mut self, pass: bool);
+        fn set_ttl(&mut self, ttl: u32);
+        fn set_stale_while_revalidate(&mut self, swr: u32);
+        fn set_pci(&mut self, pci: bool);
+        fn set_surrogate_key(&mut self, sk: &CxxString);
         fn set_auto_decompress_gzip(&mut self, gzip: bool);
         fn fastly_key_is_valid(&self) -> bool;
         fn set_cache_key(&mut self, key: &CxxVector<u8>);

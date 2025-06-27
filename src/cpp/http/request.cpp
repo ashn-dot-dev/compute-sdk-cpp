@@ -273,35 +273,33 @@ std::optional<std::string> Request::get_query_string() {
 }
 
 std::optional<std::string> Request::get_query_parameter(std::string param) {
-    auto ptr{this->req->get_query_parameter(param)};
-    if (ptr == nullptr) {
-      return std::nullopt;
-    } else {
-      std::string str{ptr->begin(), ptr->end()};
-      return {str};
-    }
+  auto ptr{this->req->get_query_parameter(param)};
+  if (ptr == nullptr) {
+    return std::nullopt;
+  } else {
+    std::string str{ptr->begin(), ptr->end()};
+    return {str};
+  }
 }
 
 Request *Request::with_query_string(std::string query) {
-    this->set_query_string(query);
-    return this;
+  this->set_query_string(query);
+  return this;
 }
 
 void Request::set_query_string(std::string query) {
-   this->req->set_query_string(query); 
+  this->req->set_query_string(query);
 }
 
-void Request::remove_query() {
-    this->req->remove_query();
-}
+void Request::remove_query() { this->req->remove_query(); }
 
 std::optional<bool> Request::get_client_ddos_detected() {
-    auto ptr{this->req->get_client_ddos_detected()};
-    if (ptr == nullptr) {
-      return std::nullopt;
-    } else {
-      return {*ptr};
-    }
+  auto ptr{this->req->get_client_ddos_detected()};
+  if (ptr == nullptr) {
+    return std::nullopt;
+  } else {
+    return {*ptr};
+  }
 }
 
 // TODO(@zkat): Do these later, I think they're lower-pri.
@@ -309,16 +307,52 @@ std::optional<bool> Request::get_client_ddos_detected() {
 // // Request *with_version(Version version);
 // // Version get_version();
 // // void set_version(Version version);
-// Request *with_pass(bool pass);
-// void set_pass(bool pass);
-// Request *with_ttl(uint32_t ttl);
-// void set_ttl(uint32_t ttl);
-// Request *with_stale_while_revalidate(uint32_t swr);
-// void set_stale_while_revalidate(uint32_t swr);
-// Request *with_pci(bool pci);
-// void set_pci(bool pci);
-// Request *with_surrogate_key(std::string sk);
-// void set_surrogate_key(std::string sk);
+
+Request *Request::with_pass(bool pass) {
+    this->set_pass(pass);
+    return this;
+}
+
+void Request::set_pass(bool pass) {
+    this->req->set_pass(pass);
+}
+
+Request *Request::with_ttl(uint32_t ttl) {
+    this->set_pass(ttl);
+    return this;
+}
+
+void Request::set_ttl(uint32_t ttl) {
+    this->req->set_ttl(ttl);
+}
+
+Request *Request::with_stale_while_revalidate(uint32_t swr) {
+    this->set_stale_while_revalidate(swr);
+    return this;
+}
+
+void Request::set_stale_while_revalidate(uint32_t swr) {
+    this->req->set_stale_while_revalidate(swr);
+}
+
+Request *Request::with_pci(bool pci) {
+    this->set_pci(pci);
+    return this;
+}
+
+void Request::set_pci(bool pci) {
+    this->req->set_pci(pci);
+}
+
+Request *Request::with_surrogate_key(std::string sk) {
+    this->set_surrogate_key(sk);
+    return this;
+}
+
+void set_surrogate_key(std::string sk) {
+    this->req->set_surrogate_key(sk);
+}
+
 // // TODO(@zkat): needs an IpAddr situation.
 // // std::optional<IpAddr> get_client_ip_addr();
 // // std::optional<IpAddr> get_server_ip_addr();
@@ -348,9 +382,7 @@ Request *Request::with_auto_decompress_gzip(bool gzip) {
 // TODO(@zkat): needs enum
 // void set_framing_headers_mode(FramingHeadersMode mode);
 // Request *set_framing_headers_mode(FramingHeadersMode mode);
-bool Request::fastly_key_is_valid() {
-    return this->req->fastly_key_is_valid();
-}
+bool Request::fastly_key_is_valid() { return this->req->fastly_key_is_valid(); }
 
 // TODO(@zkat): Do these later. I think they're lower-pri.
 // void handoff_websocket(fastly::backend::Backend backend);
@@ -358,21 +390,21 @@ bool Request::fastly_key_is_valid() {
 // Request *on_behalf_of(std::string service);
 
 void Request::set_cache_key(std::string key) {
-    this->req->set_cache_key(std::vector<uint8_t>{key.begin(), key.end()});
+  this->req->set_cache_key(std::vector<uint8_t>{key.begin(), key.end()});
 }
 
 void Request::set_cache_key(std::vector<uint8_t> key) {
-    this->req->set_cache_key(key);
+  this->req->set_cache_key(key);
 }
 
 Request *Request::with_cache_key(std::string key) {
-    this->set_cache_key(key);
-    return this;
+  this->set_cache_key(key);
+  return this;
 }
 
 Request *Request::with_cache_key(std::vector<uint8_t> key) {
-    this->set_cache_key(key);
-    return this;
+  this->set_cache_key(key);
+  return this;
 }
 
 bool is_cacheable();
