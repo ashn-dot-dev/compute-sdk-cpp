@@ -309,49 +309,41 @@ std::optional<bool> Request::get_client_ddos_detected() {
 // // void set_version(Version version);
 
 Request *Request::with_pass(bool pass) {
-    this->set_pass(pass);
-    return this;
+  this->set_pass(pass);
+  return this;
 }
 
-void Request::set_pass(bool pass) {
-    this->req->set_pass(pass);
-}
+void Request::set_pass(bool pass) { this->req->set_pass(pass); }
 
 Request *Request::with_ttl(uint32_t ttl) {
-    this->set_pass(ttl);
-    return this;
+  this->set_pass(ttl);
+  return this;
 }
 
-void Request::set_ttl(uint32_t ttl) {
-    this->req->set_ttl(ttl);
-}
+void Request::set_ttl(uint32_t ttl) { this->req->set_ttl(ttl); }
 
 Request *Request::with_stale_while_revalidate(uint32_t swr) {
-    this->set_stale_while_revalidate(swr);
-    return this;
+  this->set_stale_while_revalidate(swr);
+  return this;
 }
 
 void Request::set_stale_while_revalidate(uint32_t swr) {
-    this->req->set_stale_while_revalidate(swr);
+  this->req->set_stale_while_revalidate(swr);
 }
 
 Request *Request::with_pci(bool pci) {
-    this->set_pci(pci);
-    return this;
+  this->set_pci(pci);
+  return this;
 }
 
-void Request::set_pci(bool pci) {
-    this->req->set_pci(pci);
-}
+void Request::set_pci(bool pci) { this->req->set_pci(pci); }
 
 Request *Request::with_surrogate_key(std::string sk) {
-    this->set_surrogate_key(sk);
-    return this;
+  this->set_surrogate_key(sk);
+  return this;
 }
 
-void set_surrogate_key(std::string sk) {
-    this->req->set_surrogate_key(sk);
-}
+void set_surrogate_key(std::string sk) { this->req->set_surrogate_key(sk); }
 
 // // TODO(@zkat): needs an IpAddr situation.
 // // std::optional<IpAddr> get_client_ip_addr();
