@@ -37,9 +37,9 @@ namespace fastly::http {
 ///
 /// `Request` can be used as a builder allowing requests to be constructed and
 /// used through method chaining. Methods with the `with_` name prefix, such as
-/// `Request::with_header()`, return `Request*` to allow chaining. The builder
-/// style is typically most useful when constructing and using a request in a
-/// single expression.
+/// `Request::with_header()`, return a moved `Request` to allow chaining. The
+/// builder style is typically most useful when constructing and using a request
+/// in a single expression.
 ///
 /// For example:
 ///
@@ -178,7 +178,7 @@ public:
   // send_async(fastly::backend::Backend backend);
 
   /// Builder-style equivalent of `Request::set_body()`.
-  Request *with_body(Body body);
+  Request with_body(Body body);
 
   /// Returns `true` if this request has a body.
   bool has_body();
@@ -223,7 +223,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_body_text_plain()`.
-  Request *with_body_text_plain(std::string body);
+  Request with_body_text_plain(std::string body);
 
   /// Set the given string as the request's body with content type `text/plain;
   /// charset=UTF-8`.
@@ -231,7 +231,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_body_text_html()`.
-  Request *with_body_text_html(std::string body);
+  Request with_body_text_html(std::string body);
 
   /// Set the given string as the request's body with content type `text/html;
   /// charset=UTF-8`.
@@ -244,7 +244,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_body_octet_stream()`.
-  Request *with_body_octet_stream(std::vector<uint8_t> body);
+  Request with_body_octet_stream(std::vector<uint8_t> body);
 
   /// Set the given bytes as the request's body with content type
   /// `application/octet-stream`.
@@ -265,7 +265,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_content_type()`.
-  Request *with_content_type(std::string mime);
+  Request with_content_type(std::string mime);
 
   /// Set the MIME type described by the request's
   /// [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
@@ -283,10 +283,10 @@ public:
   bool contains_header(std::string name);
 
   /// Builder-style equivalent of `Request::append_header()`.
-  Request *with_header(std::string name, std::string value);
+  Request with_header(std::string name, std::string value);
 
   /// Builder-style equivalent of `Request::set_header()`.
-  Request *with_set_header(std::string name, std::string value);
+  Request with_set_header(std::string name, std::string value);
 
   /// Get the value of a header as a string, or `std::nullopt` if the header is
   /// not present.
@@ -320,7 +320,7 @@ public:
   std::optional<std::string> remove_header(std::string name);
 
   /// Builder-style equivalent of `Request::set_method()`.
-  Request *with_method(Method method);
+  Request with_method(Method method);
 
   /// Get the request method.
   Method get_method();
@@ -330,7 +330,7 @@ public:
 
   /// Builder-style equivalent of `Request::set_url()`.
   // TODO(@zkat): Actual URL object?
-  Request *with_url(std::string url);
+  Request with_url(std::string url);
 
   /// Get the request URL as a string.
   std::string get_url();
@@ -353,7 +353,7 @@ public:
   std::string get_path();
 
   /// Builder-style equivalent of `Request::set_path()`.
-  Request *with_path(std::string path);
+  Request with_path(std::string path);
 
   /// Set the path component of the request URL.
   ///
@@ -382,7 +382,7 @@ public:
   std::optional<std::string> get_query_parameter(std::string param);
 
   /// Builder-style equivalent of `Request::set_query()`.
-  Request *with_query_string(std::string query);
+  Request with_query_string(std::string query);
 
   /// Set the query string of the request URL query component to the given
   /// string, performing percent-encoding if necessary.
@@ -401,12 +401,12 @@ public:
   void remove_query();
 
   // TODO(@zkat): need Version enum
-  // Request *with_version(Version version);
+  // Request with_version(Version version);
   // Version get_version();
   // void set_version(Version version);
 
   /// Builder-style equivalent of `Request::set_pass()`.
-  Request *with_pass(bool pass);
+  Request with_pass(bool pass);
 
   /// Set whether this request should be cached if sent to a backend.
   ///
@@ -422,7 +422,7 @@ public:
   void set_pass(bool pass);
 
   /// Builder-style equivalent of `Request::set_ttl()`.
-  Request *with_ttl(uint32_t ttl);
+  Request with_ttl(uint32_t ttl);
 
   /// Override the caching behavior of this request to use the given Time to
   /// Live (TTL), in seconds.
@@ -435,7 +435,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_stale_while_revalidate()`.
-  Request *with_stale_while_revalidate(uint32_t swr);
+  Request with_stale_while_revalidate(uint32_t swr);
 
   /// Override the caching behavior of this request to use the given
   /// `stale-while-revalidate` time, in seconds.
@@ -447,7 +447,7 @@ public:
   void set_stale_while_revalidate(uint32_t swr);
 
   /// Builder-style equivalent of `Request::set_pci()`.
-  Request *with_pci(bool pci);
+  Request with_pci(bool pci);
 
   /// Override the caching behavior of this request to enable or disable
   /// PCI/HIPAA-compliant non-volatile caching.
@@ -466,7 +466,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_surrogate_key()`.
-  Request *with_surrogate_key(std::string sk);
+  Request with_surrogate_key(std::string sk);
 
   /// Override the caching behavior of this request to include the given
   /// surrogate key(s), provided as a header value.
@@ -495,7 +495,12 @@ public:
   // std::optional<HeaderNameIter> get_original_header_names();
 
   // std::optional<uint32_t> get_original_header_count();
-  // std::optional<bool> get_client_ddos_detected();
+
+  /// Returns whether the request was tagged as contributing to a DDoS attack
+  ///
+  /// Returns `std::nullopt` if this is not the client request.
+  std::optional<bool> get_client_ddos_detected();
+
   // std::optional<std::vector<uint8_t>> get_tls_client_hello();
   // std::optional<std::array<uint8_t, 16>> get_tls_ja3_md5();
   // std::optional<std::string> get_tls_ja4();
@@ -524,7 +529,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_auto_decompress_gzip()`.
-  Request *with_auto_decompress_gzip(bool gzip);
+  Request with_auto_decompress_gzip(bool gzip);
 
   // TODO(@zkat): needs enum
   // void set_framing_headers_mode(FramingHeadersMode mode);
@@ -550,10 +555,10 @@ public:
   void set_cache_key(std::vector<uint8_t> key);
 
   /// Builder-style equivalent of `Request::set_cache_key()`.
-  Request *with_cache_key(std::string key);
+  Request with_cache_key(std::string key);
 
   /// Builder-style equivalent of `Request::set_cache_key()`.
-  Request *with_cache_key(std::vector<uint8_t> key);
+  Request with_cache_key(std::vector<uint8_t> key);
 
   /// Gets whether the request is potentially cacheable.
   bool is_cacheable();

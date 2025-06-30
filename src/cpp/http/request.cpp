@@ -81,9 +81,9 @@ Response Request::send(fastly::backend::Backend backend) {
 
 void Request::set_body(Body body) { this->req->set_body(std::move(body.bod)); }
 
-Request *Request::with_body(Body body) {
+Request Request::with_body(Body body) {
   this->set_body(std::move(body));
-  return this;
+  return std::move(*this);
 }
 
 bool Request::has_body() { return this->req->has_body(); }
@@ -113,18 +113,18 @@ void Request::set_body_text_plain(std::string body) {
   return this->req->set_body_text_plain(body);
 }
 
-Request *Request::with_body_text_html(std::string body) {
+Request Request::with_body_text_html(std::string body) {
   this->set_body_text_html(body);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_body_text_html(std::string body) {
   return this->req->set_body_text_html(body);
 }
 
-Request *Request::with_body_text_plain(std::string body) {
+Request Request::with_body_text_plain(std::string body) {
   this->set_body_text_plain(body);
-  return this;
+  return std::move(*this);
 }
 
 std::string Request::take_body_string() {
@@ -133,9 +133,9 @@ std::string Request::take_body_string() {
                      std::istreambuf_iterator<char>());
 }
 
-Request *Request::with_body_octet_stream(std::vector<uint8_t> body) {
+Request Request::with_body_octet_stream(std::vector<uint8_t> body) {
   this->set_body_octet_stream(body);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_body_octet_stream(std::vector<uint8_t> body) {
@@ -159,9 +159,9 @@ std::optional<std::string> Request::get_content_type() {
   }
 }
 
-Request *Request::with_content_type(std::string mime) {
+Request Request::with_content_type(std::string mime) {
   this->set_content_type(mime);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_content_type(std::string mime) {
@@ -181,14 +181,14 @@ bool Request::contains_header(std::string name) {
   return this->req->contains_header(name);
 }
 
-Request *Request::with_header(std::string name, std::string value) {
+Request Request::with_header(std::string name, std::string value) {
   this->append_header(name, value);
-  return this;
+  return std::move(*this);
 }
 
-Request *Request::with_set_header(std::string name, std::string value) {
+Request Request::with_set_header(std::string name, std::string value) {
   this->set_header(name, value);
-  return this;
+  return std::move(*this);
 }
 
 // TODO(@zkat): do a proper HeaderValue situation here?
@@ -228,9 +228,9 @@ std::optional<std::string> Request::remove_header(std::string name) {
   }
 }
 
-Request *Request::with_method(Method method) {
+Request Request::with_method(Method method) {
   this->set_method(method);
-  return this;
+  return std::move(*this);
 }
 
 Method Request::get_method() { return this->req->get_method(); }
@@ -238,9 +238,9 @@ Method Request::get_method() { return this->req->get_method(); }
 void Request::set_method(Method method) { this->req->set_method(method); }
 
 // TODO(@zkat): Actual URL object?
-Request *Request::with_url(std::string url) {
+Request Request::with_url(std::string url) {
   this->set_url(url);
-  return this;
+  return std::move(*this);
 }
 
 std::string Request::get_url() {
@@ -255,9 +255,9 @@ std::string Request::get_path() {
   return {data->begin(), data->end()};
 }
 
-Request *Request::with_path(std::string path) {
+Request Request::with_path(std::string path) {
   this->set_path(path);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_path(std::string path) { this->req->set_path(path); }
@@ -282,9 +282,9 @@ std::optional<std::string> Request::get_query_parameter(std::string param) {
   }
 }
 
-Request *Request::with_query_string(std::string query) {
+Request Request::with_query_string(std::string query) {
   this->set_query_string(query);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_query_string(std::string query) {
@@ -308,42 +308,44 @@ std::optional<bool> Request::get_client_ddos_detected() {
 // // Version get_version();
 // // void set_version(Version version);
 
-Request *Request::with_pass(bool pass) {
+Request Request::with_pass(bool pass) {
   this->set_pass(pass);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_pass(bool pass) { this->req->set_pass(pass); }
 
-Request *Request::with_ttl(uint32_t ttl) {
+Request Request::with_ttl(uint32_t ttl) {
   this->set_pass(ttl);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_ttl(uint32_t ttl) { this->req->set_ttl(ttl); }
 
-Request *Request::with_stale_while_revalidate(uint32_t swr) {
+Request Request::with_stale_while_revalidate(uint32_t swr) {
   this->set_stale_while_revalidate(swr);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_stale_while_revalidate(uint32_t swr) {
   this->req->set_stale_while_revalidate(swr);
 }
 
-Request *Request::with_pci(bool pci) {
+Request Request::with_pci(bool pci) {
   this->set_pci(pci);
-  return this;
+  return std::move(*this);
 }
 
 void Request::set_pci(bool pci) { this->req->set_pci(pci); }
 
-Request *Request::with_surrogate_key(std::string sk) {
+Request Request::with_surrogate_key(std::string sk) {
   this->set_surrogate_key(sk);
-  return this;
+  return std::move(*this);
 }
 
-void set_surrogate_key(std::string sk) { this->req->set_surrogate_key(sk); }
+void Request::set_surrogate_key(std::string sk) {
+  this->req->set_surrogate_key(sk);
+}
 
 // // TODO(@zkat): needs an IpAddr situation.
 // // std::optional<IpAddr> get_client_ip_addr();
@@ -366,9 +368,9 @@ void Request::set_auto_decompress_gzip(bool gzip) {
   this->req->set_auto_decompress_gzip(gzip);
 }
 
-Request *Request::with_auto_decompress_gzip(bool gzip) {
+Request Request::with_auto_decompress_gzip(bool gzip) {
   this->set_auto_decompress_gzip(gzip);
-  return this;
+  return std::move(*this);
 }
 
 // TODO(@zkat): needs enum
@@ -389,14 +391,14 @@ void Request::set_cache_key(std::vector<uint8_t> key) {
   this->req->set_cache_key(key);
 }
 
-Request *Request::with_cache_key(std::string key) {
+Request Request::with_cache_key(std::string key) {
   this->set_cache_key(key);
-  return this;
+  return std::move(*this);
 }
 
-Request *Request::with_cache_key(std::vector<uint8_t> key) {
+Request Request::with_cache_key(std::vector<uint8_t> key) {
   this->set_cache_key(key);
-  return this;
+  return std::move(*this);
 }
 
 bool is_cacheable();

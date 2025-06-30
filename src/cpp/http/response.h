@@ -15,7 +15,7 @@ public:
       : res(std::move(response)) {};
   static Response from_body(Body body);
   void set_body(Body body);
-  Response *with_body(Body body);
+  Response with_body(Body body);
   Body take_body();
   void send_to_client();
 

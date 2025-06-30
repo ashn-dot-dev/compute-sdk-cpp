@@ -13,9 +13,9 @@ Response Response::from_body(Body body) {
 
 void Response::set_body(Body body) { this->res->set_body(std::move(body.bod)); }
 
-Response *Response::with_body(Body body) {
+Response Response::with_body(Body body) {
   this->set_body(std::move(body));
-  return this;
+  return std::move(*this);
 }
 
 Body Response::take_body() {

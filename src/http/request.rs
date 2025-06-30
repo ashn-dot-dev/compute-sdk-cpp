@@ -332,6 +332,6 @@ impl Request {
     }
 
     pub fn set_surrogate_key(&mut self, sk: &CxxString) {
-        self.0.set_surrogate_key(sk.to_string_lossy().into());
+        self.0.set_surrogate_key(sk.to_string_lossy().as_ref().try_into().expect("Failed to parse surrogate key"));
     }
 }

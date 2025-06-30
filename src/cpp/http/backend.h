@@ -10,7 +10,8 @@ namespace fastly::backend {
 class BackendBuilder;
 class Backend {
 public:
-  Backend(rust::Box<fastly::sys::backend::Backend> b) : backend(std::move(b)) {};
+  Backend(rust::Box<fastly::sys::backend::Backend> b)
+      : backend(std::move(b)) {};
   static Backend from_name(std::string name);
   BackendBuilder builder(std::string name, std::string target);
   std::string name();
@@ -45,22 +46,22 @@ public:
   BackendBuilder(rust::Box<fastly::sys::backend::BackendBuilder> b)
       : builder(std::move(b)) {};
 
-  BackendBuilder *override_host(std::string name);
-  BackendBuilder *connect_timeout(std::chrono::milliseconds timeout);
-  BackendBuilder *first_byte_timeout(std::chrono::milliseconds timeout);
-  BackendBuilder *between_bytes_timeout(std::chrono::milliseconds timeout);
-  BackendBuilder *enable_ssl();
-  BackendBuilder *disable_ssl();
-  BackendBuilder *check_certificate(std::string cert);
-  BackendBuilder *ca_certificate(std::string cert);
-  BackendBuilder *tls_ciphers(std::string ciphers);
-  BackendBuilder *sni_hostname(std::string host);
-  BackendBuilder *enable_pooling(bool enable);
-  BackendBuilder *http_keepalive_time(std::chrono::milliseconds timeout);
-  BackendBuilder *tcp_keepalive_enable(bool enable);
-  BackendBuilder *tcp_keepalive_interval_secs(uint32_t secs);
-  BackendBuilder *tcp_keepalive_probes(uint32_t probes);
-  BackendBuilder *tcp_keepalive_time_secs(uint32_t secs);
+  BackendBuilder override_host(std::string name);
+  BackendBuilder connect_timeout(std::chrono::milliseconds timeout);
+  BackendBuilder first_byte_timeout(std::chrono::milliseconds timeout);
+  BackendBuilder between_bytes_timeout(std::chrono::milliseconds timeout);
+  BackendBuilder enable_ssl();
+  BackendBuilder disable_ssl();
+  BackendBuilder check_certificate(std::string cert);
+  BackendBuilder ca_certificate(std::string cert);
+  BackendBuilder tls_ciphers(std::string ciphers);
+  BackendBuilder sni_hostname(std::string host);
+  BackendBuilder enable_pooling(bool enable);
+  BackendBuilder http_keepalive_time(std::chrono::milliseconds timeout);
+  BackendBuilder tcp_keepalive_enable(bool enable);
+  BackendBuilder tcp_keepalive_interval_secs(uint32_t secs);
+  BackendBuilder tcp_keepalive_probes(uint32_t probes);
+  BackendBuilder tcp_keepalive_time_secs(uint32_t secs);
   Backend finish();
 
 private:
