@@ -18,6 +18,15 @@ Response Response::with_body(Body body) {
   return std::move(*this);
 }
 
+void Response::set_status(StatusCode status) {
+    this->res->set_status(status.as_code());
+}
+
+Response Response::with_status(StatusCode status) {
+    this->set_status(status);
+    return std::move(*this);
+}
+
 Body Response::take_body() {
   Body body{this->res->take_body()};
   return body;

@@ -18,6 +18,10 @@ impl Response {
     pub fn set_body(&mut self, body: Box<Body>) {
         self.0.set_body(body.0);
     }
+    
+    pub fn set_status(&mut self, status: u16) {
+        self.0.set_status(status);
+    }
 
     pub fn take_body(&mut self) -> Box<Body> {
         Box::new(Body(self.0.take_body()))

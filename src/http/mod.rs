@@ -2,6 +2,7 @@ pub mod body;
 pub mod header;
 pub mod request;
 pub mod response;
+pub mod status_code;
 
 use crate::ffi::Method;
 

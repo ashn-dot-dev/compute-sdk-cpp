@@ -3,6 +3,7 @@
 
 #include "../sdk-sys.h"
 #include "body.h"
+#include "status_code.h"
 #include <string>
 #include <vector>
 
@@ -16,6 +17,8 @@ public:
   static Response from_body(Body body);
   void set_body(Body body);
   Response with_body(Body body);
+  void set_status(StatusCode status);
+  Response with_status(StatusCode status);
   Body take_body();
   void send_to_client();
 

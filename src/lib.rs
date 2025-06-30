@@ -1,5 +1,5 @@
 use backend::*;
-use http::{body::*, header::*, request::*, response::*};
+use http::{body::*, header::*, request::*, response::*, status_code::*};
 
 mod backend;
 mod http;
@@ -9,6 +9,7 @@ mod http;
 // break.
 #[cxx::bridge]
 mod ffi {
+    
     #[namespace = "fastly::sys::http"]
     #[derive(Copy, Clone, Debug)]
     pub enum Method {
@@ -139,11 +140,17 @@ mod ffi {
 
     #[namespace = "fastly::sys::http"]
     extern "Rust" {
+        fn f_http_status_code_canonical_reason(code: u16, string: Pin<&mut CxxString>) -> bool;
+    }
+    
+    #[namespace = "fastly::sys::http"]
+    extern "Rust" {
         type Response;
         fn m_static_http_response_new() -> Box<Response>;
         fn m_static_http_response_from_body(body: Box<Body>) -> Box<Response>;
         fn m_http_response_send_to_client(response: Box<Response>);
         fn set_body(&mut self, body: Box<Body>);
+        fn set_status(&mut self, status: u16);
         fn take_body(&mut self) -> Box<Body>;
     }
 
