@@ -13,6 +13,7 @@ public:
   Backend(rust::Box<fastly::sys::backend::Backend> b)
       : backend(std::move(b)) {};
   static Backend from_name(std::string name);
+  Backend clone();
   BackendBuilder builder(std::string name, std::string target);
   std::string name();
   std::string into_string();
@@ -31,6 +32,8 @@ public:
   uint32_t get_tcp_keepalive_probes();
   std::chrono::milliseconds get_tcp_keepalive_time();
   bool is_ssl();
+  bool operator==(Backend b) { return backend->equals(b.backend); }
+  bool operator!=(Backend b) { return !backend->equals(b.backend); }
   // TODO(@zkat): optional stuff is weird.
   // SslVersion get_ssl_min_version();
   // SslVersion get_ssl_max_version();

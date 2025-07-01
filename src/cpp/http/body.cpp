@@ -21,8 +21,8 @@ int Body::overflow(int_type val) {
     auto max_size{this->pbuf.max_size()};
     auto pos{0};
     while (pos < len) {
-      size_t written{this->write(reinterpret_cast<uint8_t *>(this->pbuf.data() + pos),
-          len - pos)};
+      size_t written{this->write(
+          reinterpret_cast<uint8_t *>(this->pbuf.data() + pos), len - pos)};
       if (!written) {
         return traits_type::eof();
       } else {
@@ -32,14 +32,14 @@ int Body::overflow(int_type val) {
   }
   this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   if (!traits_type::eq_int_type(val, eof)) {
-      this->sputc(val);
+    this->sputc(val);
   }
   return traits_type::not_eof(val);
 }
 
 int Body::sync() {
-    auto result{this->overflow(traits_type::eof())};
-    return traits_type::eq_int_type(result, traits_type::eof()) ? -1 : 0;
+  auto result{this->overflow(traits_type::eof())};
+  return traits_type::eq_int_type(result, traits_type::eof()) ? -1 : 0;
 }
 
 void Body::append(Body other) {
@@ -67,7 +67,36 @@ void Body::append_trailer(std::string &header_name, std::string &header_value) {
 // TODO(@zkat): this needs a HeaderMap wrapper.
 // HeaderMap get_trailers();
 
+int StreamingBody::overflow(int_type val) {
+  auto const eof{traits_type::eof()};
+  auto len{this->pptr() - this->pbase()};
+  if (len) {
+    auto max_size{this->pbuf.max_size()};
+    auto pos{0};
+    while (pos < len) {
+      size_t written{this->write(
+          reinterpret_cast<uint8_t *>(this->pbuf.data() + pos), len - pos)};
+      if (!written) {
+        return traits_type::eof();
+      } else {
+        pos += written;
+      }
+    }
+  }
+  this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
+  if (!traits_type::eq_int_type(val, eof)) {
+    this->sputc(val);
+  }
+  return traits_type::not_eof(val);
+}
+
+int StreamingBody::sync() {
+  auto result{this->overflow(traits_type::eof())};
+  return traits_type::eq_int_type(result, traits_type::eof()) ? -1 : 0;
+}
+
 void StreamingBody::finish() {
+  this->flush();
   return fastly::sys::http::m_http_streaming_body_finish(std::move(this->bod));
 }
 

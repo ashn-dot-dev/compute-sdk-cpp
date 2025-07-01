@@ -26,6 +26,14 @@ pub fn m_backend_backend_into_string(backend: Box<Backend>) -> String {
 }
 
 impl Backend {
+    pub fn equals(&self, other: &Box<Backend>) -> bool {
+        self.0 == other.0
+    }
+    
+    pub fn clone(&self) -> Box<Backend> {
+        Box::new(Backend(self.0.clone()))
+    }
+    
     pub fn name(&self) -> &str {
         self.0.name()
     }

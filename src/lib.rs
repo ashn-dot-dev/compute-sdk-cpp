@@ -30,6 +30,8 @@ mod ffi {
         fn m_static_backend_backend_from_name(name: &CxxString) -> Box<Backend>;
         fn m_static_backend_backend_builder(name: &CxxString, target: &CxxString) -> Box<BackendBuilder>;
         fn m_backend_backend_into_string(backend: Box<Backend>) -> String;
+        fn equals(&self, other: &Box<Backend>) -> bool;
+        fn clone(&self) -> Box<Backend>;
         fn name(&self) -> &str;
         fn exists(&self) -> bool;
         fn is_dynamic(&self) -> bool;
@@ -127,6 +129,8 @@ mod ffi {
         fn set_query_string(&mut self, qs: &CxxString);
         fn remove_query(&mut self);
         fn get_client_ddos_detected(&self) -> *const bool;
+        fn get_client_ip_addr(&self, buf: Pin<&mut CxxString>) -> bool;
+        fn get_server_ip_addr(&self, buf: Pin<&mut CxxString>) -> bool;
         fn set_pass(&mut self, pass: bool);
         fn set_ttl(&mut self, ttl: u32);
         fn set_stale_while_revalidate(&mut self, swr: u32);
@@ -147,11 +151,41 @@ mod ffi {
     extern "Rust" {
         type Response;
         fn m_static_http_response_new() -> Box<Response>;
+        fn is_from_backend(&self) -> bool;
+        fn clone_without_body(&self) -> Box<Response>;
+        fn clone_with_body(&mut self) -> Box<Response>;
         fn m_static_http_response_from_body(body: Box<Body>) -> Box<Response>;
-        fn m_http_response_send_to_client(response: Box<Response>);
+        fn m_static_http_response_from_status(status: u16) -> Box<Response>;
+        fn m_static_http_response_see_other(destination: &CxxString) -> Box<Response>;
+        fn m_static_http_response_redirect(destination: &CxxString) -> Box<Response>;
+        fn m_static_http_response_temporary_redirect(destination: &CxxString) -> Box<Response>;
+        fn has_body(&self) -> bool;
         fn set_body(&mut self, body: Box<Body>);
-        fn set_status(&mut self, status: u16);
         fn take_body(&mut self) -> Box<Body>;
+        fn append_body(&mut self, other: Box<Body>);
+        fn m_http_response_into_body(response: Box<Response>) -> Box<Body>;
+        fn set_body_text_plain(&mut self, body: &CxxString);
+        fn set_body_text_html(&mut self, body: &CxxString);
+        fn set_body_octet_stream(&mut self, body: &CxxVector<u8>);
+        fn get_content_type(&self) -> *const CxxVector<u8>;
+        fn set_content_type(&mut self, mime: &CxxString);
+        fn get_content_length(&self) -> *const usize;
+        fn contains_header(&self, name: &CxxString) -> bool;
+        fn get_header(&self, name: &CxxString) -> *const CxxVector<u8>;
+        fn get_header_all(&self, name: &CxxString) -> Box<HeaderValuesIter>;
+        fn set_header(&mut self, name: &CxxString, value: &CxxString);
+        fn append_header(&mut self, name: &CxxString, value: &CxxString);
+        fn remove_header(&mut self, name: &CxxString) -> *const CxxVector<u8>;
+        fn set_status(&mut self, status: u16);
+        fn get_backend_name(&self, out: Pin<&mut CxxString>) -> bool;
+        fn get_backend(&self) -> *const Backend;
+        fn get_backend_addr(&self, out: Pin<&mut CxxString>) -> bool;
+        fn take_backend_request(&mut self) -> *const Request;
+        fn m_http_response_send_to_client(response: Box<Response>);
+        pub fn m_http_response_stream_to_client(response: Box<Response>) -> Box<StreamingBody>;
+        fn get_ttl(&self) -> *const u32;
+        fn get_age(&self) -> *const u32;
+        fn get_stale_while_revalidate(&self) -> *const u32;
     }
 
     #[namespace = "fastly::sys::http"]

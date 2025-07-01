@@ -1,3 +1,5 @@
+use std::pin::Pin;
+
 use cxx::{CxxString, CxxVector, UniquePtr};
 
 use crate::backend::Backend;
@@ -6,7 +8,7 @@ use crate::http::body::Body;
 use crate::http::header::HeaderValuesIter;
 use crate::http::response::Response;
 
-pub struct Request(fastly::Request);
+pub struct Request(pub(crate) fastly::Request);
 
 pub fn m_static_http_request_new(method: Method, url: &CxxString) -> Box<Request> {
     let method: fastly::http::Method = method.into();
@@ -102,6 +104,7 @@ impl Request {
     pub fn clone_without_body(&self) -> Box<Request> {
         Box::new(Request(self.0.clone_without_body()))
     }
+    
     pub fn clone_with_body(&mut self) -> Box<Request> {
         Box::new(Request(self.0.clone_with_body()))
     }
@@ -333,5 +336,23 @@ impl Request {
 
     pub fn set_surrogate_key(&mut self, sk: &CxxString) {
         self.0.set_surrogate_key(sk.to_string_lossy().as_ref().try_into().expect("Failed to parse surrogate key"));
+    }
+    
+    pub fn get_client_ip_addr(&self, buf: Pin<&mut CxxString>) -> bool {
+        if let Some(ip) = self.0.get_client_ip_addr() {
+            buf.push_str(ip.to_string().as_ref());
+            true
+        } else {
+            false
+        }
+    }
+    
+    pub fn get_server_ip_addr(&self, buf: Pin<&mut CxxString>) -> bool {
+        if let Some(ip) = self.0.get_server_ip_addr() {
+            buf.push_str(ip.to_string().as_ref());
+            true
+        } else {
+            false
+        }
     }
 }

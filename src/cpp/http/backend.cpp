@@ -9,6 +9,10 @@ Backend Backend::from_name(std::string name) {
       fastly::sys::backend::m_static_backend_backend_from_name(name));
 }
 
+Backend Backend::clone() {
+    return std::move(this->backend->clone());
+}
+
 BackendBuilder Backend::builder(std::string name, std::string target) {
   return std::move(
       fastly::sys::backend::m_static_backend_backend_builder(name, target));

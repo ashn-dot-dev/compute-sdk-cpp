@@ -2,8 +2,8 @@
 #define FASTLY_HTTP_BODY_H
 
 #include <array>
-#include <memory>
 #include <iostream>
+#include <memory>
 #include <streambuf>
 #include <string>
 #include <vector>
@@ -20,15 +20,18 @@ protected:
   int sync();
 
 public:
-  Body() : bod(std::move(fastly::sys::http::m_static_http_body_new())),  std::iostream(this) {
+  Body()
+      : bod(std::move(fastly::sys::http::m_static_http_body_new())),
+        std::iostream(this) {
     this->setg(this->gbuf.data(), this->gbuf.data(), this->gbuf.data());
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
-  Body(rust::Box<fastly::sys::http::Body> body) : bod(std::move(body)), std::iostream(this) {
+  Body(rust::Box<fastly::sys::http::Body> body)
+      : bod(std::move(body)), std::iostream(this) {
     this->setg(this->gbuf.data(), this->gbuf.data(), this->gbuf.data());
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
-  Body(Body&& old) : bod(std::move(old.bod)), std::iostream(this) {}
+  Body(Body &&old) : bod(std::move(old.bod)), std::iostream(this) {}
   Body(std::vector<uint8_t> body_vec) : Body() {
     this->fill_from_vec(body_vec);
   };
@@ -76,10 +79,14 @@ private:
   }
 };
 
-class StreamingBody {
+class StreamingBody : public std::ostream, public std::streambuf {
+protected:
+  int overflow(int_type val);
+  int sync();
+
 public:
   StreamingBody(rust::Box<fastly::sys::http::StreamingBody> body)
-      : bod(std::move(body)) {};
+      : bod(std::move(body)), std::ostream(this) {};
   void finish();
   void append(Body other);
   size_t write(uint8_t *buf, size_t bufsize);
@@ -87,6 +94,10 @@ public:
   // TODO(@zkat): needs the HeaderMap type.
   // void finish_with_trailers(&HeaderMap trailers);
   rust::Box<fastly::sys::http::StreamingBody> bod;
+
+private:
+  std::array<char, 512> pbuf;
+  std::array<char, 512> gbuf;
 };
 
 } // namespace fastly::http

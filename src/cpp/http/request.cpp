@@ -79,7 +79,10 @@ Response Request::send(fastly::backend::Backend backend) {
 // std::pair<fastly::http::StreamingBody, PendingRequest>
 // send_async(fastly::backend::Backend backend);
 
-void Request::set_body(Body body) { this->req->set_body(std::move(body.bod)); }
+void Request::set_body(Body body) {
+    body << std::flush;
+    this->req->set_body(std::move(body.bod));
+}
 
 Request Request::with_body(Body body) {
   this->set_body(std::move(body));
@@ -347,9 +350,24 @@ void Request::set_surrogate_key(std::string sk) {
   this->req->set_surrogate_key(sk);
 }
 
-// // TODO(@zkat): needs an IpAddr situation.
-// // std::optional<IpAddr> get_client_ip_addr();
-// // std::optional<IpAddr> get_server_ip_addr();
+std::optional<std::string> Request::get_client_ip_addr() {
+   std::string ret;
+   if (this->req->get_client_ip_addr(ret)) {
+       return {ret};
+   } else {
+       return std::nullopt;
+   }
+}
+
+std::optional<std::string> Request::get_server_ip_addr() {
+    std::string ret;
+    if (this->req->get_server_ip_addr(ret)) {
+        return {ret};
+    } else {
+        return std::nullopt;
+    }
+}
+
 // // TODO(@zkat): needs iterator
 // // std::optional<HeaderNameIter> get_original_header_names();
 // std::optional<uint32_t> get_original_header_count();

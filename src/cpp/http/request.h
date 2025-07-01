@@ -14,6 +14,8 @@
 
 namespace fastly::http {
 
+class Response;
+
 /// An HTTP request, including body, headers, method, and URL.
 ///
 /// # Getting the client request
@@ -488,9 +490,9 @@ public:
   /// the backend.
   void set_surrogate_key(std::string sk);
 
-  // TODO(@zkat): needs an IpAddr situation.
-  // std::optional<IpAddr> get_client_ip_addr();
-  // std::optional<IpAddr> get_server_ip_addr();
+  std::optional<std::string> get_client_ip_addr();
+  std::optional<std::string> get_server_ip_addr();
+  
   // TODO(@zkat): needs iterator
   // std::optional<HeaderNameIter> get_original_header_names();
 
