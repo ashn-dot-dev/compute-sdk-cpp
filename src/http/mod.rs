@@ -1,5 +1,6 @@
 pub mod body;
 pub mod header;
+pub mod purge;
 pub mod request;
 pub mod response;
 pub mod status_code;

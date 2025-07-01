@@ -1,5 +1,5 @@
 use backend::*;
-use http::{body::*, header::*, request::*, response::*, status_code::*};
+use http::{body::*, header::*, purge::*, request::*, response::*, status_code::*};
 
 mod backend;
 mod http;
@@ -205,5 +205,11 @@ mod ffi {
         fn append(&mut self, other: Box<Body>);
         fn append_trailer(&mut self, name: &CxxString, value: &CxxString);
         fn write(&mut self, bytes: &[u8]) -> usize;
+    }
+    
+    #[namespace = "fastly::sys::http::purge"]
+    extern "Rust" {
+        fn f_http_purge_purge_surrogate_key(surrogate_key: &CxxString);
+        fn f_http_purge_soft_purge_surrogate_key(surrogate_key: &CxxString);
     }
 }
