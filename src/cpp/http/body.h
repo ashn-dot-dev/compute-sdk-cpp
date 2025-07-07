@@ -110,9 +110,12 @@ protected:
 
 public:
   StreamingBody(StreamingBody &&other)
-      : bod(std::move(other.bod)), pbuf(std::move(other.pbuf)),
-        std::ostream(std::move(other)) {
-    this->set_rdbuf(this);
+      : bod(std::move(other.bod)), std::ostream(std::move(other)) {
+    // Flush first so that pbase() == pptr(), then we don't need to collect
+    // offsets.
+    other.flush();
+    this->pbuf = std::move(other.pbuf);
+    this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
   void finish();
   void append(Body other);

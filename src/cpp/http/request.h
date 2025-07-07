@@ -342,7 +342,7 @@ public:
   send_async_streaming(fastly::backend::Backend backend);
 
   /// Builder-style equivalent of `Request::set_body()`.
-  Request with_body(Body &&body);
+  Request with_body(Body body);
 
   /// Returns `true` if this request has a body.
   bool has_body();
@@ -353,7 +353,7 @@ public:
   Body take_body();
 
   /// Set the given value as the request's body.
-  void set_body(Body &&body);
+  void set_body(Body body);
 
   /// Append another [`Body`] to the body of this request without reading or
   /// writing any body contents.
