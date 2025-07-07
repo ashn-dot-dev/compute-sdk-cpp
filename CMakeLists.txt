@@ -40,7 +40,7 @@ endif()
 set(FASTLY_SYS_LIB "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_TRIPLE}/${TARGET_DIR}/libfastly_sys.a")
 
 set(FASTLY_SYS_CXX "${CMAKE_CURRENT_BINARY_DIR}/fastly-sys.cpp")
-file(GLOB_RECURSE FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.cpp")
+file(GLOB_RECURSE FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.cpp")
 
 add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
 add_library(fastly STATIC ${FASTLY_CXX} fastly-sys)
