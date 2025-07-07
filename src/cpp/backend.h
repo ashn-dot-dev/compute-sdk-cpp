@@ -1,5 +1,5 @@
-#ifndef FASTLY_HTTP_BACKEND_H
-#define FASTLY_HTTP_BACKEND_H
+#ifndef FASTLY_BACKEND_H
+#define FASTLY_BACKEND_H
 
 #include "../sdk-sys.h"
 #include <chrono>

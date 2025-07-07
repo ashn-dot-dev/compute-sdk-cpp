@@ -1,8 +1,8 @@
 #ifndef FASTLY_HTTP_REQUEST_H
 #define FASTLY_HTTP_REQUEST_H
 
+#include "../backend.h"
 #include "../sdk-sys.h"
-#include "backend.h"
 #include "body.h"
 #include "header.h"
 #include "method.h"
