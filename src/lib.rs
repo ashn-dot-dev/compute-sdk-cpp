@@ -1,9 +1,11 @@
 use backend::*;
+use device_detection::*;
 use http::{
     body::*, header::*, purge::*, request::request::*, request::*, response::*, status_code::*,
 };
 
 mod backend;
+mod device_detection;
 mod http;
 
 // Unfortunately, due to some limitations with cxx, the ENTIRE bridge basically
@@ -314,5 +316,26 @@ mod ffi {
     extern "Rust" {
         fn f_http_purge_purge_surrogate_key(surrogate_key: &CxxString);
         fn f_http_purge_soft_purge_surrogate_key(surrogate_key: &CxxString);
+    }
+
+    #[namespace = "fastly::sys::device_detection"]
+    extern "Rust" {
+        type Device;
+        fn f_device_detection_lookup(user_agent: &CxxString) -> *mut Device;
+        fn device_name(&self, out: Pin<&mut CxxString>) -> bool;
+        fn brand(&self, out: Pin<&mut CxxString>) -> bool;
+        fn model(&self, out: Pin<&mut CxxString>) -> bool;
+        fn hwtype(&self, out: Pin<&mut CxxString>) -> bool;
+        fn is_ereader(&self) -> *const bool;
+        fn is_gameconsole(&self) -> *const bool;
+        fn is_mediaplayer(&self) -> *const bool;
+        fn is_mobile(&self) -> *const bool;
+        fn is_smarttv(&self) -> *const bool;
+        fn is_tablet(&self) -> *const bool;
+        fn is_tvplayer(&self) -> *const bool;
+        fn is_desktop(&self) -> *const bool;
+        fn is_touchscreen(&self) -> *const bool;
+        // Get it to generate the appropriate symbols like ::drop() etc.
+        fn f_device_detection_noop(dev: Box<Device>) -> Box<Device>;
     }
 }
