@@ -1,6 +1,4 @@
 #include "backend.h"
-#include "sdk-sys.h"
-#include <chrono>
 
 namespace fastly::backend {
 

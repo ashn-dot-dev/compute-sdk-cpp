@@ -1,7 +1,7 @@
 #ifndef FASTLY_BACKEND_H
 #define FASTLY_BACKEND_H
 
-#include "../sdk-sys.h"
+#include "sdk-sys.h"
 #include <chrono>
 #include <string>
 

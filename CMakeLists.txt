@@ -63,7 +63,7 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-file(GLOB_RECURSE FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.h")
+file(GLOB_RECURSE FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h")
 foreach(f ${FASTLY_HEADERS})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp" ${f})
     configure_file(${f} ${DIST_DIR}/fastly/${fr} COPYONLY)
