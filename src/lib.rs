@@ -1,10 +1,12 @@
 use backend::*;
+use config_store::*;
 use device_detection::*;
 use http::{
     body::*, header::*, purge::*, request::request::*, request::*, response::*, status_code::*,
 };
 
 mod backend;
+mod config_store;
 mod device_detection;
 mod http;
 
@@ -337,5 +339,13 @@ mod ffi {
         fn is_touchscreen(&self) -> *const bool;
         // Get it to generate the appropriate symbols like ::drop() etc.
         fn f_device_detection_noop(dev: Box<Device>) -> Box<Device>;
+    }
+    
+    #[namespace = "fastly::sys::config_store"]
+    extern "Rust" {
+        type ConfigStore;
+        fn m_static_config_store_config_store_open(name: &CxxString) -> Box<ConfigStore>;
+        fn get(&self, key: &CxxString, out: Pin<&mut CxxString>) -> bool;
+        fn contains(&self, key: &CxxString) -> bool;
     }
 }
