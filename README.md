@@ -2,6 +2,8 @@
 
 Creates a static library for C++ usage.
 
+Full API documentation is available at https://fastly.github.io/compute-sdk-cpp, or can be [browsed locally](./docs/html/index.html).
+
 ### Example(s)
 
 To run the "hello world" example (see `./examples/echo.cpp`), you can use:
@@ -44,3 +46,5 @@ just
 ```sh
 just --set wasi-sdk /path/to/your/wasi-sdk-XX.Y
 ```
+
+#### Building the docs
