@@ -93,9 +93,9 @@ select(std::vector<PendingRequest> &reqs);
 ///
 /// # Creation and conversion
 ///
-/// New requests can be created programmatically with `Request::new()`. In
-/// addition, there are convenience constructors like `Request::get()` which
-/// automatically select the appropriate method.
+/// New requests can be created programmatically with the `Request()`
+/// constructor. In addition, there are convenience constructors like
+/// `Request::get()` which automatically select the appropriate method.
 ///
 /// # Sending backend requests
 ///
