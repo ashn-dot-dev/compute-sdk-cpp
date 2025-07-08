@@ -2,6 +2,8 @@
 #define FASTLY_HTTP_STATUS_CODE_H
 
 #include "../sdk-sys.h"
+#include <cstdlib>
+#include <iostream>
 #include <optional>
 
 namespace fastly::http {
@@ -9,6 +11,15 @@ namespace fastly::http {
 class StatusCode {
 public:
   StatusCode() = default;
+
+  /// Creates a new StatusCode. Panics if the code is out of range.
+  constexpr StatusCode(uint16_t code) : value(code) {
+    if (code < 100 || code >= 1000) {
+      std::cerr << "Invalid StatusCode value.";
+      std::abort();
+    }
+  }
+
   /// 100 Continue
   /// [[RFC9110,
   /// Section 15.2.1](https://datatracker.ietf.org/doc/html/rfc9110#section-15.2.1)]
@@ -304,7 +315,6 @@ public:
 
 private:
   uint16_t value;
-  constexpr StatusCode(uint16_t code) : value(code) {}
 };
 
 } // namespace fastly::http
