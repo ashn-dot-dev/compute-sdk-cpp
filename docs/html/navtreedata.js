@@ -57,8 +57,9 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classfastly_1_1_response.html#a7cb222720c592ea876a9624505b52bd3",
-"classfastly_1_1http_1_1_request.html#a2cf3641d7280bda6646f8654e3208f54",
-"classfastly_1_1http_1_1_status_code.html#a24ce3754eb4be91a3c8754872fb1cfef"
+"classfastly_1_1http_1_1_request.html#a250edfbcf779a73528555be2170512a7",
+"classfastly_1_1http_1_1_status_code.html#a1a45d5646323913cf126b3c026673b6a",
+"secret__store_8h.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

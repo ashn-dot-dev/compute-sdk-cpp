@@ -4,11 +4,13 @@ use device_detection::*;
 use http::{
     body::*, header::*, purge::*, request::request::*, request::*, response::*, status_code::*,
 };
+use secret_store::*;
 
 mod backend;
 mod config_store;
 mod device_detection;
 mod http;
+mod secret_store;
 
 // Unfortunately, due to some limitations with cxx, the ENTIRE bridge basically
 // has to be under a single ffi module, or cross-referencing ffi types is gonna
@@ -340,12 +342,27 @@ mod ffi {
         // Get it to generate the appropriate symbols like ::drop() etc.
         fn f_device_detection_noop(dev: Box<Device>) -> Box<Device>;
     }
-    
+
     #[namespace = "fastly::sys::config_store"]
     extern "Rust" {
         type ConfigStore;
         fn m_static_config_store_config_store_open(name: &CxxString) -> Box<ConfigStore>;
         fn get(&self, key: &CxxString, out: Pin<&mut CxxString>) -> bool;
+        fn contains(&self, key: &CxxString) -> bool;
+    }
+
+    #[namespace = "fastly::sys::secret_store"]
+    extern "Rust" {
+        type Secret;
+        fn plaintext(&self, out: Pin<&mut CxxString>);
+        fn m_static_secret_store_secret_from_bytes(bytes: &CxxString) -> Box<Secret>;
+    }
+
+    #[namespace = "fastly::sys::secret_store"]
+    extern "Rust" {
+        type SecretStore;
+        fn m_static_secret_store_secret_store_open(name: &CxxString) -> Box<SecretStore>;
+        fn get(&self, key: &CxxString) -> *mut Secret;
         fn contains(&self, key: &CxxString) -> bool;
     }
 }
