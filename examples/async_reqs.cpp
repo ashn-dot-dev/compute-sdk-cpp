@@ -11,15 +11,13 @@ int main() {
   // `std::vector`.
   std::vector<fastly::http::request::PendingRequest> pending;
   pending.push_back(
-      fastly::Request::get("https://www.fastly.com/"s).send_async("fastly"s));
-  pending.push_back(
-      fastly::Request::get("https://en.wikipedia.org/wiki/Fastly"s)
-          .send_async("wikipedia"s));
-  auto [resp, _other_pending] =
-      fastly::http::request::select(std::move(pending));
+      fastly::Request::get("https://www.fastly.com/").send_async("fastly"));
+  pending.push_back(fastly::Request::get("https://en.wikipedia.org/wiki/Fastly")
+                        .send_async("wikipedia"));
+  auto [resp, _other_pending] = fastly::http::request::select(pending);
   fastly::Body tail;
-  tail << "\n\nThis was the request from "s << resp.get_backend_name().value()
-       << "\nLocation: "s << resp.take_backend_request().value().get_url();
+  tail << "\n\nThis was the request from " << resp.get_backend_name().value()
+       << "\nLocation: " << resp.take_backend_request().value().get_url();
   resp.append_body(std::move(tail));
   resp.send_to_client();
 }

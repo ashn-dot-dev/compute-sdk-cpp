@@ -12,6 +12,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -114,10 +115,10 @@ select(std::vector<PendingRequest> &reqs);
 /// For example:
 ///
 /// ```cpp
-/// Request::get("https://example.com"s)
-///     .with_header("my-header"s, "hello!"s)
-///     .with_header("my-other-header"s, "Здравствуйте!"s)
-///     .send("example_backend"s);
+/// Request::get("https://example.com")
+///     .with_header("my-header", "hello!")
+///     .with_header("my-other-header", "Здравствуйте!")
+///     .send("example_backend");
 /// ```
 ///
 /// # Setter methods
@@ -131,12 +132,12 @@ select(std::vector<PendingRequest> &reqs);
 /// For example:
 ///
 /// ```cpp
-/// auto req{Request::get("https://example.com"s).with_header("my-header"s,
-/// "hello!"s)};
+/// auto req{Request::get("https://example.com").with_header("my-header",
+/// "hello!")};
 /// if (needs_translation) {
-///     req.set_header("my-other-header"s, "Здравствуйте!"s);
+///     req.set_header("my-other-header", "Здравствуйте!");
 /// }
-/// req.send("example_backend"s);
+/// req.send("example_backend");
 /// ```
 class Request {
   friend request::PendingRequest;
@@ -145,43 +146,43 @@ class Request {
 public:
   /// Create a new request with the given method and URL, no headers, and an
   /// empty body.
-  Request(Method method, std::string url);
+  Request(Method method, std::string_view url);
 
   /// Create a new `GET` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request get(std::string url);
+  static Request get(std::string_view url);
 
   /// Create a new `HEAD` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request head(std::string url);
+  static Request head(std::string_view url);
 
   /// Create a new `POST` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request post(std::string url);
+  static Request post(std::string_view url);
 
   /// Create a new `PUT` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request put(std::string url);
+  static Request put(std::string_view url);
 
   /// Create a new `DELETE` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request delete_(std::string url);
+  static Request delete_(std::string_view url);
 
   /// Create a new `CONNECT` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request connect(std::string url);
+  static Request connect(std::string_view url);
 
   /// Create a new `OPTIONS` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request options(std::string url);
+  static Request options(std::string_view url);
 
   /// Create a new `TRACE` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request trace(std::string url);
+  static Request trace(std::string_view url);
 
   /// Create a new `PATCH` `Request` with the given URL, no headers, and an
   /// empty body.
-  static Request patch(std::string url);
+  static Request patch(std::string_view url);
 
   /// Get the client request being handled by this execution of the Compute
   /// program.
@@ -205,13 +206,13 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto original = Request::post("https://example.com"s)
-  ///     .with_header("hello"s, "world!"s)
-  ///     .with_body("hello"s);
+  /// auto original = Request::post("https://example.com")
+  ///     .with_header("hello", "world!")
+  ///     .with_body("hello");
   /// auto new_req = original.clone_without_body();
   /// assert(original.get_method() == new.get_method());
   /// assert(original.get_url() == new.get_url());
-  /// assert(original.get_header("hello"s) == new.get_header("hello"s));
+  /// assert(original.get_header("hello") == new.get_header("hello"));
   /// assert(original.has_body());
   /// assert(!new.has_body());
   /// ```
@@ -268,10 +269,10 @@ public:
   /// finishes first:
   ///
   /// ```cpp
-  /// auto backend_resp_1{Request::get("https://example.com/"s)
-  ///     .send_async("example_backend_1"s)};
-  /// auto backend_resp_2{Request::get("https://example.com/"s)
-  ///     .send_async("example_backend_2"s)};
+  /// auto backend_resp_1{Request::get("https://example.com/")
+  ///     .send_async("example_backend_1")};
+  /// auto backend_resp_2{Request::get("https://example.com/")
+  ///     .send_async("example_backend_2")};
   /// auto [selected_resp, _others] =
   /// fastly::http::request::select({backend_resp_1, backend_resp_2});
   /// selected_resp.send_to_client();
@@ -282,9 +283,9 @@ public:
   /// it completes:
   ///
   /// ```cpp
-  /// Request::post("https://example.com"s)
+  /// Request::post("https://example.com")
   ///     .with_body(some_large_file)
-  ///     .send_async("example_backend"s);
+  ///     .send_async("example_backend");
   /// ```
   request::PendingRequest send_async(fastly::backend::Backend backend);
 
@@ -320,7 +321,7 @@ public:
   /// auto req_body{req.take_body()};
   /// // Start sending the client request to the client with a now-empty body
   /// auto [backend_body, pending_req] = req
-  ///     .send_async_streaming("example_backend"s);
+  ///     .send_async_streaming("example_backend");
   ///
   /// size_t num_lines{0};
   /// std::string buf;
@@ -372,8 +373,8 @@ public:
   ///
   /// ```cpp
   /// auto req{Request::post("https://example.com").with_body("hello! client
-  /// says: "s)}; req.append_body(Request::from_client().into_body());
-  /// req.send("example_backend"s);
+  /// says: ")}; req.append_body(Request::from_client().into_body());
+  /// req.send("example_backend");
   /// ```
   void append_body(Body &body);
 
@@ -388,19 +389,19 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_body_text_plain()`.
-  Request with_body_text_plain(std::string body);
+  Request with_body_text_plain(std::string_view body);
 
   /// Set the given string as the request's body with content type
   /// `text/plain; charset=UTF-8`.
-  void set_body_text_plain(std::string body);
+  void set_body_text_plain(std::string_view body);
 
   /// Builder-style equivalent of
   /// `Request::set_body_text_html()`.
-  Request with_body_text_html(std::string body);
+  Request with_body_text_html(std::string_view body);
 
   /// Set the given string as the request's body with content type `text/html;
   /// charset=UTF-8`.
-  void set_body_text_html(std::string body);
+  void set_body_text_html(std::string_view body);
 
   /// Take and return the body from this request as a string.
   ///
@@ -430,14 +431,14 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_content_type()`.
-  Request with_content_type(std::string mime);
+  Request with_content_type(std::string_view mime);
 
   /// Set the MIME type described by the request's
   /// [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
   /// header.
   ///
   /// Any existing `Content-Type` header values will be overwritten.
-  void set_content_type(std::string mime);
+  void set_content_type(std::string_view mime);
 
   /// Get the value of the request's
   /// [`Content-Length`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length)
@@ -445,13 +446,13 @@ public:
   std::optional<size_t> get_content_length();
 
   /// Returns whether the given header name is present in the request.
-  bool contains_header(std::string name);
+  bool contains_header(std::string_view name);
 
   /// Builder-style equivalent of `Request::append_header()`.
-  Request with_header(std::string name, std::string value);
+  Request with_header(std::string_view name, std::string_view value);
 
   /// Builder-style equivalent of `Request::set_header()`.
-  Request with_set_header(std::string name, std::string value);
+  Request with_set_header(std::string_view name, std::string_view value);
 
   /// Get the value of a header as a string, or `std::nullopt` if the header
   /// is not present.
@@ -461,10 +462,10 @@ public:
   /// `Request::get_header_all()`
   /// all of the values.
   // TODO(@zkat): do a proper HeaderValue situation here?
-  std::optional<std::string> get_header(std::string name);
+  std::optional<std::string> get_header(std::string_view name);
 
   /// Get an iterator of all the values of a header.
-  HeaderValuesIter get_header_all(std::string name);
+  HeaderValuesIter get_header_all(std::string_view name);
 
   // TODO(@zkat): sigh. IDK
   // ??? get_headers();
@@ -472,17 +473,17 @@ public:
 
   /// Set a request header to the given value, discarding any previous values
   /// for the given header name.
-  void set_header(std::string name, std::string value);
+  void set_header(std::string_view name, std::string_view value);
 
   /// Add a request header with given value.
   ///
   /// Unlike `Request::set_header()`, this does not discard existing values
   /// for the same header name.
-  void append_header(std::string name, std::string value);
+  void append_header(std::string_view name, std::string_view value);
 
   /// Remove all request headers of the given name, and return one of the
   /// removed header values if any were present.
-  std::optional<std::string> remove_header(std::string name);
+  std::optional<std::string> remove_header(std::string_view name);
 
   /// Builder-style equivalent of `Request::set_method()`.
   Request with_method(Method method);
@@ -495,7 +496,7 @@ public:
 
   /// Builder-style equivalent of `Request::set_url()`.
   // TODO(@zkat): Actual URL object?
-  Request with_url(std::string url);
+  Request with_url(std::string_view url);
 
   /// Get the request URL as a string.
   std::string get_url();
@@ -505,20 +506,20 @@ public:
   /// # Panics
   ///
   /// Panics if the url fails to parse as a URL or invalid UTF-8.
-  void set_url(std::string url);
+  void set_url(std::string_view url);
 
   /// Get the path component of the request URL.
   ///
   /// # Examples
   ///
   /// ```cpp
-  /// auto req{Request::get("https://example.com/hello#world"s)};
-  /// assert(req.get_path() == "/hello"s);
+  /// auto req{Request::get("https://example.com/hello#world")};
+  /// assert(req.get_path() == "/hello");
   /// ```
   std::string get_path();
 
   /// Builder-style equivalent of `Request::set_path()`.
-  Request with_path(std::string path);
+  Request with_path(std::string_view path);
 
   /// Set the path component of the request URL.
   ///
@@ -529,11 +530,11 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto req{Request::get("https://example.com/"s)};
-  /// req.set_path("/hello"s);
-  /// assert!(req.get_url(), "https://example.com/hello"s);
+  /// auto req{Request::get("https://example.com/")};
+  /// req.set_path("/hello");
+  /// assert!(req.get_url(), "https://example.com/hello");
   /// ```
-  void set_path(std::string path);
+  void set_path(std::string_view path);
 
   /// Get the query component of the request URL, if it exists, as a
   /// percent-encoded ASCII string.
@@ -544,10 +545,10 @@ public:
   /// This assumes that the query string is a `&` separated list of
   /// `parameter=value` pairs. The value of the first occurrence of
   /// `parameter` is returned. No URL decoding is performed.
-  std::optional<std::string> get_query_parameter(std::string param);
+  std::optional<std::string> get_query_parameter(std::string_view param);
 
   /// Builder-style equivalent of `Request::set_query()`.
-  Request with_query_string(std::string query);
+  Request with_query_string(std::string_view query);
 
   /// Set the query string of the request URL query component to the given
   /// string, performing percent-encoding if necessary.
@@ -555,12 +556,12 @@ public:
   /// # Examples
   ///
   /// ```no_run
-  /// auto req{Request::get("https://example.com/foo"s)};
-  /// req.set_query_string("hello=🌐!&bar=baz"s);
+  /// auto req{Request::get("https://example.com/foo")};
+  /// req.set_query_string("hello=🌐!&bar=baz");
   /// assert(req.get_url(),
-  /// "https://example.com/foo?hello=%F0%9F%8C%90!&bar=baz"s);
+  /// "https://example.com/foo?hello=%F0%9F%8C%90!&bar=baz");
   /// ```
-  void set_query_string(std::string query);
+  void set_query_string(std::string_view query);
 
   /// Remove the query component from the request URL, if one exists.
   void remove_query();
@@ -631,7 +632,7 @@ public:
 
   /// Builder-style equivalent of
   /// `Request::set_surrogate_key()`.
-  Request with_surrogate_key(std::string sk);
+  Request with_surrogate_key(std::string_view sk);
 
   /// Override the caching behavior of this request to include the given
   /// surrogate key(s), provided as a header value.
@@ -651,7 +652,7 @@ public:
   /// This sets the `Request::set_pass()` behavior to `false`, and
   /// extends (but does not replace) any `Surrogate-Key` response headers from
   /// the backend.
-  void set_surrogate_key(std::string sk);
+  void set_surrogate_key(std::string_view sk);
 
   std::optional<std::string> get_client_ip_addr();
   std::optional<std::string> get_server_ip_addr();
@@ -710,18 +711,18 @@ public:
 
   // void handoff_websocket(fastly::backend::Backend backend);
   // void handoff_fanout(fastly::backend::Backend backend);
-  // Request *on_behalf_of(std::string service);
+  // Request *on_behalf_of(std::string_view service);
 
   /// Set the cache key to be used when attempting to satisfy this request
   /// from a cached response.
-  void set_cache_key(std::string key);
+  void set_cache_key(std::string_view key);
 
   /// Set the cache key to be used when attempting to satisfy this request
   /// from a cached response.
   void set_cache_key(std::vector<uint8_t> key);
 
   /// Builder-style equivalent of `Request::set_cache_key()`.
-  Request with_cache_key(std::string key);
+  Request with_cache_key(std::string_view key);
 
   /// Builder-style equivalent of `Request::set_cache_key()`.
   Request with_cache_key(std::vector<uint8_t> key);

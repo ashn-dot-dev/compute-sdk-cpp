@@ -2,21 +2,24 @@
 
 namespace fastly::config_store {
 
-ConfigStore ConfigStore::open(std::string name) {
+ConfigStore ConfigStore::open(std::string_view name) {
   return ConfigStore(
-      fastly::sys::config_store::m_static_config_store_config_store_open(name));
+      fastly::sys::config_store::m_static_config_store_config_store_open(
+          static_cast<std::string>(name)));
 }
 
-std::optional<std::string> ConfigStore::get(std::string key) {
+std::optional<std::string> ConfigStore::get(std::string_view key) {
   std::string out;
-  auto some{this->cs->get(key, out)};
+  auto some{this->cs->get(static_cast<std::string>(key), out)};
   if (!some) {
     return std::nullopt;
   } else {
-    return std::optional<std::string>{out};
+    return std::optional<std::string>{std::move(out)};
   }
 }
 
-bool ConfigStore::contains(std::string key) { return this->cs->contains(key); }
+bool ConfigStore::contains(std::string_view key) {
+  return this->cs->contains(static_cast<std::string>(key));
+}
 
 } // namespace fastly::config_store

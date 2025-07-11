@@ -4,20 +4,23 @@
 #include "sdk-sys.h"
 #include <chrono>
 #include <string>
+#include <string_view>
 
 namespace fastly::backend {
 
 class BackendBuilder;
 class Backend {
 public:
-  Backend(std::string name)
-      : backend(std::move(
-            fastly::sys::backend::m_static_backend_backend_from_name(name))) {};
+  Backend(const char *name) : Backend(std::string(name)) {};
+  Backend(std::string_view name)
+      : backend(
+            std::move(fastly::sys::backend::m_static_backend_backend_from_name(
+                static_cast<std::string>(name)))) {};
   Backend(rust::Box<fastly::sys::backend::Backend> b)
       : backend(std::move(b)) {};
-  static Backend from_name(std::string name);
+  static Backend from_name(std::string_view name);
   Backend clone();
-  BackendBuilder builder(std::string name, std::string target);
+  BackendBuilder builder(std::string_view name, std::string_view target);
   std::string name();
   std::string into_string();
   bool exists();
@@ -45,23 +48,24 @@ public:
 
 class BackendBuilder {
 public:
-  BackendBuilder(std::string name, std::string target)
+  BackendBuilder(std::string_view name, std::string_view target)
       : builder(std::move(
             fastly::sys::backend::m_static_backend_backend_builder_new(
-                name, target))) {};
+                static_cast<std::string>(name),
+                static_cast<std::string>(target)))) {};
   BackendBuilder(rust::Box<fastly::sys::backend::BackendBuilder> b)
       : builder(std::move(b)) {};
 
-  BackendBuilder override_host(std::string name);
+  BackendBuilder override_host(std::string_view name);
   BackendBuilder connect_timeout(std::chrono::milliseconds timeout);
   BackendBuilder first_byte_timeout(std::chrono::milliseconds timeout);
   BackendBuilder between_bytes_timeout(std::chrono::milliseconds timeout);
   BackendBuilder enable_ssl();
   BackendBuilder disable_ssl();
-  BackendBuilder check_certificate(std::string cert);
-  BackendBuilder ca_certificate(std::string cert);
-  BackendBuilder tls_ciphers(std::string ciphers);
-  BackendBuilder sni_hostname(std::string host);
+  BackendBuilder check_certificate(std::string_view cert);
+  BackendBuilder ca_certificate(std::string_view cert);
+  BackendBuilder tls_ciphers(std::string_view ciphers);
+  BackendBuilder sni_hostname(std::string_view host);
   BackendBuilder enable_pooling(bool enable);
   BackendBuilder http_keepalive_time(std::chrono::milliseconds timeout);
   BackendBuilder tcp_keepalive_enable(bool enable);

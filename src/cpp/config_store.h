@@ -4,6 +4,7 @@
 #include "sdk-sys.h"
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace fastly::config_store {
 
@@ -18,7 +19,7 @@ public:
   /// auto merriam{fastly::ConfigStore::open("merriam webster")};
   /// auto oed{fastly::ConfigStore::open("oxford english config store")};
   /// ```
-  static ConfigStore open(std::string name);
+  static ConfigStore open(std::string_view name);
 
   /// Lookup a value in this config store.
   ///
@@ -29,29 +30,29 @@ public:
   /// # Examples
   ///
   /// ```no_run
-  /// auto store{fastly::ConfigStore::open("test config store"s)};
-  /// assert(store.get("bread"s).value() ==
-  ///        "a usually baked and leavened food"s);
+  /// auto store{fastly::ConfigStore::open("test config store")};
+  /// assert(store.get("bread").value() ==
+  ///        "a usually baked and leavened food");
   ///
   /// assert(
-  ///     store.get("freedom"s).value() ==
-  ///     "the absence of necessity, coercion, or constraint"s,
+  ///     store.get("freedom").value() ==
+  ///     "the absence of necessity, coercion, or constraint",
   /// );
   ///
   /// // Otherwise, `get` will return nullopt.
-  /// assert(store.get("zzzzz"s) == std::nullopt);
+  /// assert(store.get("zzzzz") == std::nullopt);
   /// ```
-  std::optional<std::string> get(std::string key);
+  std::optional<std::string> get(std::string_view key);
 
   /// Return true if the config_store contains an entry with the given key.
   ///
   /// # Examples
   ///
   /// ```no_run
-  /// auto store{fastly::ConfigStore::open("test config store"s)};
-  /// assert(store.contains("key"s));
+  /// auto store{fastly::ConfigStore::open("test config store")};
+  /// assert(store.contains("key"));
   /// ```
-  bool contains(std::string key);
+  bool contains(std::string_view key);
 
 private:
   rust::Box<fastly::sys::config_store::ConfigStore> cs;

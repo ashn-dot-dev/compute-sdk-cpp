@@ -2,18 +2,17 @@
 
 namespace fastly::backend {
 
-Backend Backend::from_name(std::string name) {
-  return std::move(
-      fastly::sys::backend::m_static_backend_backend_from_name(name));
+Backend Backend::from_name(std::string_view name) {
+  return std::move(fastly::sys::backend::m_static_backend_backend_from_name(
+      static_cast<std::string>(name)));
 }
 
-Backend Backend::clone() {
-    return std::move(this->backend->clone());
-}
+Backend Backend::clone() { return std::move(this->backend->clone()); }
 
-BackendBuilder Backend::builder(std::string name, std::string target) {
-  return std::move(
-      fastly::sys::backend::m_static_backend_backend_builder(name, target));
+BackendBuilder Backend::builder(std::string_view name,
+                                std::string_view target) {
+  return std::move(fastly::sys::backend::m_static_backend_backend_builder(
+      static_cast<std::string>(name), static_cast<std::string>(target)));
 }
 
 std::string Backend::into_string() {
@@ -79,9 +78,9 @@ bool Backend::is_ssl() { return this->backend->is_ssl(); }
 // SslVersion get_ssl_min_version();
 // SslVersion get_ssl_max_version();
 
-BackendBuilder BackendBuilder::override_host(std::string name) {
+BackendBuilder BackendBuilder::override_host(std::string_view name) {
   this->builder = fastly::sys::backend::m_backend_backend_builder_override_host(
-      std::move(this->builder), name);
+      std::move(this->builder), static_cast<std::string>(name));
   return std::move(*this);
 }
 
@@ -121,29 +120,29 @@ BackendBuilder BackendBuilder::disable_ssl() {
   return std::move(*this);
 }
 
-BackendBuilder BackendBuilder::check_certificate(std::string cert) {
+BackendBuilder BackendBuilder::check_certificate(std::string_view cert) {
   this->builder =
       fastly::sys::backend::m_backend_backend_builder_check_certificate(
-          std::move(this->builder), cert);
+          std::move(this->builder), static_cast<std::string>(cert));
   return std::move(*this);
 }
 
-BackendBuilder BackendBuilder::ca_certificate(std::string cert) {
+BackendBuilder BackendBuilder::ca_certificate(std::string_view cert) {
   this->builder =
       fastly::sys::backend::m_backend_backend_builder_ca_certificate(
-          std::move(this->builder), cert);
+          std::move(this->builder), static_cast<std::string>(cert));
   return std::move(*this);
 }
 
-BackendBuilder BackendBuilder::tls_ciphers(std::string ciphers) {
+BackendBuilder BackendBuilder::tls_ciphers(std::string_view ciphers) {
   this->builder = fastly::sys::backend::m_backend_backend_builder_tls_ciphers(
-      std::move(this->builder), ciphers);
+      std::move(this->builder), static_cast<std::string>(ciphers));
   return std::move(*this);
 }
 
-BackendBuilder BackendBuilder::sni_hostname(std::string host) {
+BackendBuilder BackendBuilder::sni_hostname(std::string_view host) {
   this->builder = fastly::sys::backend::m_backend_backend_builder_sni_hostname(
-      std::move(this->builder), host);
+      std::move(this->builder), static_cast<std::string>(host));
   return std::move(*this);
 }
 

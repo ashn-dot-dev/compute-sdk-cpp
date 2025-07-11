@@ -18,7 +18,6 @@ int Body::overflow(int_type val) {
   auto const eof{traits_type::eof()};
   auto len{this->pptr() - this->pbase()};
   if (len) {
-    auto max_size{this->pbuf.max_size()};
     auto pos{0};
     while (pos < len) {
       size_t written{this->write(
@@ -61,8 +60,10 @@ std::size_t Body::write(uint8_t *buf, std::size_t bufsize) {
 // Prefix get_prefix(uint32_t prefix_len);
 // PrefixString get_prefix_string(uint32_t prefix_len);
 
-void Body::append_trailer(std::string &header_name, std::string &header_value) {
-  this->bod->append_trailer(header_name, header_value);
+void Body::append_trailer(std::string_view header_name,
+                          std::string_view header_value) {
+  this->bod->append_trailer(static_cast<std::string>(header_name),
+                            static_cast<std::string>(header_value));
 }
 
 // TODO(@zkat): this needs a HeaderMap wrapper.
@@ -110,9 +111,10 @@ std::size_t StreamingBody::write(uint8_t *buf, std::size_t bufsize) {
   return this->bod->write(slice);
 }
 
-void StreamingBody::append_trailer(std::string &header_name,
-                                   std::string &header_value) {
-  this->bod->append_trailer(header_name, header_value);
+void StreamingBody::append_trailer(std::string_view header_name,
+                                   std::string_view header_value) {
+  this->bod->append_trailer(static_cast<std::string>(header_name),
+                            static_cast<std::string>(header_value));
 }
 
 } // namespace fastly::http

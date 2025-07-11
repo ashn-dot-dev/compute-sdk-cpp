@@ -9,6 +9,7 @@
 #include <memory>
 #include <streambuf>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "../sdk-sys.h"
@@ -32,31 +33,28 @@ public:
     this->setg(this->gbuf.data(), this->gbuf.data(), this->gbuf.data());
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
-  Body(Body &&old) : bod(std::move(old.bod)), std::iostream(this) {
-    // Get gbuf offsets and setg based on them.
+  Body(Body &&old)
+      : bod((old.sync(), std::move(old.bod))), pbuf(std::move(old.pbuf)),
+        std::iostream(this) {
     auto gcurr{old.gptr() - old.eback()};
     auto gend{old.egptr() - old.eback()};
     this->gbuf = std::move(old.gbuf);
     this->setg(this->gbuf.data(), this->gbuf.data() + gcurr,
                this->gbuf.data() + gend);
-
-    // Flush first so that pbase() == pptr(), then we don't need to collect
-    // offsets.
-    old.flush();
-    this->pbuf = std::move(old.pbuf);
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   }
   Body(std::vector<uint8_t> body_vec) : Body() {
     this->fill_from_vec(body_vec);
   };
-  Body(std::string body_str) : Body() {
+  Body(std::string_view body_str) : Body() {
     std::vector<uint8_t> vec{body_str.begin(), body_str.end()};
     this->fill_from_vec(vec);
   };
   size_t read(uint8_t *buf, size_t bufsize);
   size_t write(uint8_t *buf, size_t bufsize);
   void append(Body other);
-  void append_trailer(std::string &header_name, std::string &header_value);
+  void append_trailer(std::string_view header_name,
+                      std::string_view header_value);
 
   // TODO(@zkat): this needs a HeaderMap wrapper.
   // HeaderMap get_trailers();
@@ -110,23 +108,23 @@ protected:
 
 public:
   StreamingBody(StreamingBody &&other)
-      : bod(std::move(other.bod)), std::ostream(std::move(other)) {
-    // Flush first so that pbase() == pptr(), then we don't need to collect
-    // offsets.
-    other.flush();
-    this->pbuf = std::move(other.pbuf);
+      : bod((other.sync(), std::move(other.bod))), pbuf(std::move(other.pbuf)),
+        std::ostream(this) {
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
   void finish();
   void append(Body other);
   size_t write(uint8_t *buf, size_t bufsize);
-  void append_trailer(std::string &header_name, std::string &header_value);
+  void append_trailer(std::string_view header_name,
+                      std::string_view header_value);
   // TODO(@zkat): needs the HeaderMap type.
   // void finish_with_trailers(&HeaderMap trailers);
 
 private:
   StreamingBody(rust::Box<fastly::sys::http::StreamingBody> body)
-      : bod(std::move(body)), std::ostream(this) {};
+      : bod(std::move(body)), std::ostream(this) {
+    this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
+  };
   rust::Box<fastly::sys::http::StreamingBody> bod;
   std::array<char, 512> pbuf;
 };

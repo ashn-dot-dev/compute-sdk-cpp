@@ -9,6 +9,7 @@
 #include "status_code.h"
 #include <chrono>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -63,8 +64,8 @@ select(std::vector<PendingRequest> &reqs);
 ///
 /// ```cpp
 /// Response()
-///     .with_header("my-header"s, "hello!"s)
-///     .with_header("my-other-header"s, "Здравствуйте!"s)
+///     .with_header("my-header", "hello!")
+///     .with_header("my-other-header", "Здравствуйте!")
 ///     .send_to_client();
 /// ```
 ///
@@ -77,9 +78,9 @@ select(std::vector<PendingRequest> &reqs);
 /// constructing a value involves conditional branches or loops. For example:
 ///
 /// ```cpp
-/// auto resp{Response().with_header("my-header"s, "hello!"s)};
+/// auto resp{Response().with_header("my-header", "hello!")};
 /// if (needs_translation) {
-///     resp.set_header("my-other-header"s, "Здравствуйте!"s);
+///     resp.set_header("my-other-header", "Здравствуйте!");
 /// }
 /// resp.send_to_client();
 /// ```
@@ -125,11 +126,11 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto resp{Response::see_other("https://www.fastly.com"s)};
+  /// auto resp{Response::see_other("https://www.fastly.com")};
   /// assert(resp.get_status() == StatusCode::SEE_OTHER);
-  /// assert(resp.get_header("Location"s).value(), "https://www.fastly.com"s);
+  /// assert(resp.get_header("Location").value(), "https://www.fastly.com");
   /// ```
-  static Response see_other(std::string destination);
+  static Response see_other(std::string_view destination);
 
   /// Create a 308 Permanent Redirect response with the given value as the
   /// `Location` header.
@@ -137,11 +138,11 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto resp{Response::redirect("https://www.fastly.com"s)};
+  /// auto resp{Response::redirect("https://www.fastly.com")};
   /// assert(resp.get_status() == StatusCode::PERMANENT_REDIRECT);
-  /// assert(resp.get_header("Location"s).value(), "https://www.fastly.com"s);
+  /// assert(resp.get_header("Location").value(), "https://www.fastly.com");
   /// ```
-  static Response redirect(std::string destination);
+  static Response redirect(std::string_view destination);
 
   /// Create a 307 Temporary Redirect response with the given value as the
   /// `Location` header.
@@ -149,11 +150,11 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto resp{Response::temporary_redirect("https://www.fastly.com"s)};
+  /// auto resp{Response::temporary_redirect("https://www.fastly.com")};
   /// assert(resp.get_status() == StatusCode::TEMPORARY_REDIRECT);
-  /// assert(resp.get_header("Location"s).value(), "https://www.fastly.com");
+  /// assert(resp.get_header("Location").value(), "https://www.fastly.com");
   /// ```
-  static Response temporary_redirect(std::string destination);
+  static Response temporary_redirect(std::string_view destination);
 
   /// Builder-style equivalent of `Response::set_body()`.
   Response with_body(Body body);
@@ -181,9 +182,9 @@ public:
   /// # Examples
   ///
   /// ```cpp
-  /// auto resp{Response::from_body("hello! backend says: "s)};
+  /// auto resp{Response::from_body("hello! backend says: ")};
   /// auto backend_resp{
-  ///   Request::get("https://example.com/"s).send("example_backend"s)
+  ///   Request::get("https://example.com/").send("example_backend")
   /// };
   /// resp.append_body(backend_resp.into_body());
   /// resp.send_to_client();
@@ -201,19 +202,19 @@ public:
 
   /// Builder-style equivalent of
   /// `Response::set_body_text_plain()`.
-  Response with_body_text_plain(std::string body);
+  Response with_body_text_plain(std::string_view body);
 
   /// Set the given string as the response's body with content type `text/plain;
   /// charset=UTF-8`.
-  void set_body_text_plain(std::string body);
+  void set_body_text_plain(std::string_view body);
 
   /// Builder-style equivalent of
   /// `Response::set_body_text_html()`.
-  Response with_body_text_html(std::string body);
+  Response with_body_text_html(std::string_view body);
 
   /// Set the given string as the response's body with content type `text/html;
   /// charset=UTF-8`.
-  void set_body_text_html(std::string body);
+  void set_body_text_html(std::string_view body);
 
   /// Take and return the body from this response as a string.
   ///
@@ -241,14 +242,14 @@ public:
 
   /// Builder-style equivalent of
   /// `Response::set_content_type()`.
-  Response with_content_type(std::string mime);
+  Response with_content_type(std::string_view mime);
 
   /// Set the MIME type described by the response's
   /// [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
   /// header.
   ///
   /// Any existing `Content-Type` header values will be overwritten.
-  void set_content_type(std::string mime);
+  void set_content_type(std::string_view mime);
 
   /// Get the value of the response's
   /// [`Content-Length`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length)
@@ -256,13 +257,13 @@ public:
   std::optional<size_t> get_content_length();
 
   /// Returns whether the given header name is present in the response.
-  bool contains_header(std::string name);
+  bool contains_header(std::string_view name);
 
   /// Builder-style equivalent of `Response::append_header()`.
-  Response with_header(std::string name, std::string value);
+  Response with_header(std::string_view name, std::string_view value);
 
   /// Builder-style equivalent of `Response::set_header()`.
-  Response with_set_header(std::string name, std::string value);
+  Response with_set_header(std::string_view name, std::string_view value);
 
   /// Get the value of a header as a string, or `std::nullopt` if the header is
   /// not present.
@@ -272,10 +273,10 @@ public:
   /// `Response::get_header_all()`
   /// all of the values.
   // TODO(@zkat): do a proper HeaderValue situation here?
-  std::optional<std::string> get_header(std::string name);
+  std::optional<std::string> get_header(std::string_view name);
 
   /// Get an iterator of all the values of a header.
-  HeaderValuesIter get_header_all(std::string name);
+  HeaderValuesIter get_header_all(std::string_view name);
 
   // TODO(@zkat): sigh. IDK
   // ??? get_headers();
@@ -283,17 +284,17 @@ public:
 
   /// Set a response header to the given value, discarding any previous values
   /// for the given header name.
-  void set_header(std::string name, std::string value);
+  void set_header(std::string_view name, std::string_view value);
 
   /// Add a request header with given value.
   ///
   /// Unlike `Response::set_header()`, this does not discard existing values for
   /// the same header name.
-  void append_header(std::string name, std::string value);
+  void append_header(std::string_view name, std::string_view value);
 
   /// Remove all request headers of the given name, and return one of the
   /// removed header values if any were present.
-  std::optional<std::string> remove_header(std::string name);
+  std::optional<std::string> remove_header(std::string_view name);
 
   /// Builder-style equivalent of `Response::set_status()`.
   void set_status(StatusCode status);
@@ -305,7 +306,7 @@ public:
   /// Using the constants from `StatusCode`:
   ///
   /// ```cpp
-  /// auto resp{fastly::Response::from_body("not found!"s)};
+  /// auto resp{fastly::Response::from_body("not found!")};
   /// resp.set_status(fastly::http::StatusCode::NOT_FOUND);
   /// resp.send_to_client();
   /// ```
@@ -313,7 +314,7 @@ public:
   /// Using a `uint16_t`:
   ///
   /// ```cpp
-  /// auto resp{fastly::Response::from_body("not found!"s)};
+  /// auto resp{fastly::Response::from_body("not found!")};
   /// resp.set_status(404);
   /// resp.send_to_client();
   /// ```
@@ -337,9 +338,9 @@ public:
   ///
   /// ```cpp
   /// auto
-  /// backend_resp{Request::get("https://example.com/"s).send("example_backend"s)};
+  /// backend_resp{Request::get("https://example.com/").send("example_backend")};
   /// assert(backend_resp.get_backend_name(),
-  /// std::optional("example_backend"s));
+  /// std::optional("example_backend"));
   /// ```
   ///
   /// From a synthetic response:
@@ -359,11 +360,11 @@ public:
   ///
   /// ```cpp
   /// auto backend_resp{
-  ///   Request::get("https://example.com/"s).send("example_backend"s)
+  ///   Request::get("https://example.com/").send("example_backend")
   /// };
   /// assert(
   ///   backend_resp.get_backend() ==
-  ///   std::optional(Backend::from_name("example_backend"s))
+  ///   std::optional(Backend::from_name("example_backend"))
   /// );
   /// ```
   ///
@@ -383,12 +384,12 @@ public:
   /// From a backend response:
   ///
   /// ```cpp
-  /// auto backend_resp{Request::get("https://example.com/"s)
+  /// auto backend_resp{Request::get("https://example.com/")
   ///     .with_pass(true)
-  ///     .send("example_backend"s)};
+  ///     .send("example_backend")};
   /// assert(
   ///    backend_resp.get_backend_addr() ==
-  ///    std::optional("127.0.0.1:443"s));
+  ///    std::optional("127.0.0.1:443"));
   /// ```
   ///
   /// From a synthetic response:
@@ -410,13 +411,13 @@ public:
   /// From a backend response:
   ///
   /// ```cpp
-  /// auto backend_resp{Request::post("https://example.com/"s)
-  ///     .with_body("hello"s)
-  ///     .send("example_backend"s)};
+  /// auto backend_resp{Request::post("https://example.com/")
+  ///     .with_body("hello")
+  ///     .send("example_backend")};
   /// auto backend_req{backend_resp.take_backend_request().value()};
-  /// assert(backend_req.get_url() == "https://example.com/"s);
+  /// assert(backend_req.get_url() == "https://example.com/");
   /// assert(!backend_req.has_body());
-  /// backend_req.with_body("goodbye"s).send("example_backend"s);
+  /// backend_req.with_body("goodbye").send("example_backend");
   /// ```
   ///
   /// From a synthetic response:
@@ -446,22 +447,22 @@ public:
   /// Sending a backend response without modification:
   ///
   /// ```cpp
-  /// Request::get("https://example.com/"s).send("example_backend"s).send_to_client();
+  /// Request::get("https://example.com/").send("example_backend").send_to_client();
   /// ```
   ///
   /// Removing a header from a backend response before sending to the client:
   ///
   /// ```cpp
   /// auto
-  /// backend_resp{Request::get("https://example.com/"s).send("example_backend"s)};
-  /// backend_resp.remove_header("bad-header"s);
+  /// backend_resp{Request::get("https://example.com/").send("example_backend")};
+  /// backend_resp.remove_header("bad-header");
   /// backend_resp.send_to_client();
   /// ```
   ///
   /// Sending a synthetic response:
   ///
   /// ```cpp
-  /// Response::from_body("hello, world!"s).send_to_client();
+  /// Response::from_body("hello, world!").send_to_client();
   /// ```
   void send_to_client();
 
@@ -510,9 +511,9 @@ public:
   /// client_body.finish();
   ///
   /// std::cout
-  ///   << "backend response body contained "s
+  ///   << "backend response body contained "
   ///   << num_lines
-  ///   << " lines"s
+  ///   << " lines"
   ///   << std::endl;
   /// ```
   StreamingBody stream_to_client();

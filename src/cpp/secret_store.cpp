@@ -8,13 +8,14 @@ std::string Secret::plaintext() {
   return out;
 }
 
-SecretStore SecretStore::open(std::string name) {
+SecretStore SecretStore::open(std::string_view name) {
   return SecretStore(
-      fastly::sys::secret_store::m_static_secret_store_secret_store_open(name));
+      fastly::sys::secret_store::m_static_secret_store_secret_store_open(
+          static_cast<std::string>(name)));
 }
 
-std::optional<Secret> SecretStore::get(std::string key) {
-  auto ptr{this->ss->get(key)};
+std::optional<Secret> SecretStore::get(std::string_view key) {
+  auto ptr{this->ss->get(static_cast<std::string>(key))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
@@ -23,6 +24,8 @@ std::optional<Secret> SecretStore::get(std::string key) {
   }
 }
 
-bool SecretStore::contains(std::string key) { return this->ss->contains(key); }
+bool SecretStore::contains(std::string_view key) {
+  return this->ss->contains(static_cast<std::string>(key));
+}
 
 } // namespace fastly::secret_store

@@ -2,9 +2,9 @@
 
 namespace fastly::device_detection {
 
-std::optional<Device> lookup(std::string user_agent) {
-  auto ptr{
-      fastly::sys::device_detection::f_device_detection_lookup(user_agent)};
+std::optional<Device> lookup(std::string_view user_agent) {
+  auto ptr{fastly::sys::device_detection::f_device_detection_lookup(
+      static_cast<std::string>(user_agent))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {

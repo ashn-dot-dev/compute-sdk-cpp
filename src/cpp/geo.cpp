@@ -2,8 +2,8 @@
 
 namespace fastly::geo {
 
-std::optional<Geo> geo_lookup(std::string ip) {
-  auto ptr{fastly::sys::geo::f_geo_geo_lookup(ip)};
+std::optional<Geo> geo_lookup(std::string_view ip) {
+  auto ptr{fastly::sys::geo::f_geo_geo_lookup(static_cast<std::string>(ip))};
   if (ptr != nullptr) {
     return std::optional<Geo>(
         Geo(rust::Box<fastly::sys::geo::Geo>::from_raw(ptr)));

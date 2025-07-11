@@ -4,12 +4,13 @@
 #include "sdk-sys.h"
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace fastly::device_detection {
 
 /// The device data associated with a particular User-Agent string.
 class Device {
-  friend std::optional<Device> lookup(std::string user_agent);
+  friend std::optional<Device> lookup(std::string_view user_agent);
 
 public:
   /// The name of the client device.
@@ -66,7 +67,7 @@ private:
 };
 
 /// Look up the data associated with a particular User-Agent string.
-std::optional<Device> lookup(std::string user_agent);
+std::optional<Device> lookup(std::string_view user_agent);
 
 } // namespace fastly::device_detection
 

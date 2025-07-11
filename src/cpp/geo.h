@@ -4,6 +4,7 @@
 #include "sdk-sys.h"
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace fastly::geo {
 
@@ -32,7 +33,7 @@ class Geo;
 ///     std::cout << "receiving a request from outer space 🛸";
 /// }
 /// ```
-std::optional<Geo> geo_lookup(std::string ip);
+std::optional<Geo> geo_lookup(std::string_view ip);
 
 /// An offset from UTC.
 ///
@@ -77,7 +78,7 @@ private:
 
 /// The geographic data associated with a particular IP address.
 class Geo {
-  friend std::optional<Geo> geo_lookup(std::string ip);
+  friend std::optional<Geo> geo_lookup(std::string_view ip);
 
 public:
   /// The name of the organization associated with `as_number`.

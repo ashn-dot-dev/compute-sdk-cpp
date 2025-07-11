@@ -48,57 +48,66 @@ select(std::vector<PendingRequest> &reqs) {
 
 } // namespace request
 
-Request::Request(Method method, std::string url)
-    : req(std::move(
-          fastly::sys::http::m_static_http_request_new(method, url))) {}
+Request::Request(Method method, std::string_view url)
+    : req(std::move(fastly::sys::http::m_static_http_request_new(
+          method, static_cast<std::string>(url)))) {}
 
 Request Request::from_client() {
   Request req{fastly::sys::http::m_static_http_request_from_client()};
   return req;
 }
 
-Request Request::get(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_get(url)};
+Request Request::get(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_get(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::head(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_head(url)};
+Request Request::head(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_head(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::post(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_post(url)};
+Request Request::post(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_post(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::put(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_put(url)};
+Request Request::put(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_put(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::delete_(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_delete(url)};
+Request Request::delete_(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_delete(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::connect(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_connect(url)};
+Request Request::connect(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_connect(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::options(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_options(url)};
+Request Request::options(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_options(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::trace(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_trace(url)};
+Request Request::trace(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_trace(
+      static_cast<std::string>(url))};
   return req;
 }
 
-Request Request::patch(std::string url) {
-  Request req{fastly::sys::http::m_static_http_request_patch(url)};
+Request Request::patch(std::string_view url) {
+  Request req{fastly::sys::http::m_static_http_request_patch(
+      static_cast<std::string>(url))};
   return req;
 }
 
@@ -168,20 +177,20 @@ Body Request::into_body() {
       fastly::sys::http::m_http_request_into_body(std::move(this->req)));
 }
 
-void Request::set_body_text_plain(std::string body) {
-  return this->req->set_body_text_plain(body);
+void Request::set_body_text_plain(std::string_view body) {
+  return this->req->set_body_text_plain(static_cast<std::string>(body));
 }
 
-Request Request::with_body_text_html(std::string body) {
+Request Request::with_body_text_html(std::string_view body) {
   this->set_body_text_html(body);
   return std::move(*this);
 }
 
-void Request::set_body_text_html(std::string body) {
-  return this->req->set_body_text_html(body);
+void Request::set_body_text_html(std::string_view body) {
+  return this->req->set_body_text_html(static_cast<std::string>(body));
 }
 
-Request Request::with_body_text_plain(std::string body) {
+Request Request::with_body_text_plain(std::string_view body) {
   this->set_body_text_plain(body);
   return std::move(*this);
 }
@@ -218,13 +227,13 @@ std::optional<std::string> Request::get_content_type() {
   }
 }
 
-Request Request::with_content_type(std::string mime) {
+Request Request::with_content_type(std::string_view mime) {
   this->set_content_type(mime);
   return std::move(*this);
 }
 
-void Request::set_content_type(std::string mime) {
-  this->req->set_content_type(mime);
+void Request::set_content_type(std::string_view mime) {
+  this->req->set_content_type(static_cast<std::string>(mime));
 }
 
 std::optional<size_t> Request::get_content_length() {
@@ -236,23 +245,24 @@ std::optional<size_t> Request::get_content_length() {
   }
 }
 
-bool Request::contains_header(std::string name) {
-  return this->req->contains_header(name);
+bool Request::contains_header(std::string_view name) {
+  return this->req->contains_header(static_cast<std::string>(name));
 }
 
-Request Request::with_header(std::string name, std::string value) {
+Request Request::with_header(std::string_view name, std::string_view value) {
   this->append_header(name, value);
   return std::move(*this);
 }
 
-Request Request::with_set_header(std::string name, std::string value) {
+Request Request::with_set_header(std::string_view name,
+                                 std::string_view value) {
   this->set_header(name, value);
   return std::move(*this);
 }
 
 // TODO(@zkat): do a proper HeaderValue situation here?
-std::optional<std::string> Request::get_header(std::string name) {
-  auto ptr{this->req->get_header(name)};
+std::optional<std::string> Request::get_header(std::string_view name) {
+  auto ptr{this->req->get_header(static_cast<std::string>(name))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
@@ -261,24 +271,26 @@ std::optional<std::string> Request::get_header(std::string name) {
   }
 }
 
-HeaderValuesIter Request::get_header_all(std::string name) {
-  return this->req->get_header_all(name);
+HeaderValuesIter Request::get_header_all(std::string_view name) {
+  return this->req->get_header_all(static_cast<std::string>(name));
 }
 
 // TODO(@zkat): sigh. IDK
 // ??? get_headers();
 // HeaderNamesIter get_header_names();
 
-void Request::set_header(std::string name, std::string value) {
-  this->req->set_header(name, value);
+void Request::set_header(std::string_view name, std::string_view value) {
+  this->req->set_header(static_cast<std::string>(name),
+                        static_cast<std::string>(value));
 }
 
-void Request::append_header(std::string name, std::string value) {
-  this->req->append_header(name, value);
+void Request::append_header(std::string_view name, std::string_view value) {
+  this->req->append_header(static_cast<std::string>(name),
+                           static_cast<std::string>(value));
 }
 
-std::optional<std::string> Request::remove_header(std::string name) {
-  auto ptr{this->req->remove_header(name)};
+std::optional<std::string> Request::remove_header(std::string_view name) {
+  auto ptr{this->req->remove_header(static_cast<std::string>(name))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
@@ -296,8 +308,7 @@ Method Request::get_method() { return this->req->get_method(); }
 
 void Request::set_method(Method method) { this->req->set_method(method); }
 
-// TODO(@zkat): Actual URL object?
-Request Request::with_url(std::string url) {
+Request Request::with_url(std::string_view url) {
   this->set_url(url);
   return std::move(*this);
 }
@@ -307,19 +318,23 @@ std::string Request::get_url() {
   return {data->begin(), data->end()};
 }
 
-void Request::set_url(std::string url) { this->req->set_url(url); }
+void Request::set_url(std::string_view url) {
+  this->req->set_url(static_cast<std::string>(url));
+}
 
 std::string Request::get_path() {
   std::unique_ptr<std::vector<uint8_t>> data{this->req->get_path()};
   return {data->begin(), data->end()};
 }
 
-Request Request::with_path(std::string path) {
+Request Request::with_path(std::string_view path) {
   this->set_path(path);
   return std::move(*this);
 }
 
-void Request::set_path(std::string path) { this->req->set_path(path); }
+void Request::set_path(std::string_view path) {
+  this->req->set_path(static_cast<std::string>(path));
+}
 
 std::optional<std::string> Request::get_query_string() {
   auto ptr{this->req->get_query_string()};
@@ -331,8 +346,9 @@ std::optional<std::string> Request::get_query_string() {
   }
 }
 
-std::optional<std::string> Request::get_query_parameter(std::string param) {
-  auto ptr{this->req->get_query_parameter(param)};
+std::optional<std::string>
+Request::get_query_parameter(std::string_view param) {
+  auto ptr{this->req->get_query_parameter(static_cast<std::string>(param))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
@@ -341,13 +357,13 @@ std::optional<std::string> Request::get_query_parameter(std::string param) {
   }
 }
 
-Request Request::with_query_string(std::string query) {
+Request Request::with_query_string(std::string_view query) {
   this->set_query_string(query);
   return std::move(*this);
 }
 
-void Request::set_query_string(std::string query) {
-  this->req->set_query_string(query);
+void Request::set_query_string(std::string_view query) {
+  this->req->set_query_string(static_cast<std::string>(query));
 }
 
 void Request::remove_query() { this->req->remove_query(); }
@@ -397,13 +413,13 @@ Request Request::with_pci(bool pci) {
 
 void Request::set_pci(bool pci) { this->req->set_pci(pci); }
 
-Request Request::with_surrogate_key(std::string sk) {
+Request Request::with_surrogate_key(std::string_view sk) {
   this->set_surrogate_key(sk);
   return std::move(*this);
 }
 
-void Request::set_surrogate_key(std::string sk) {
-  this->req->set_surrogate_key(sk);
+void Request::set_surrogate_key(std::string_view sk) {
+  this->req->set_surrogate_key(static_cast<std::string>(sk));
 }
 
 std::optional<std::string> Request::get_client_ip_addr() {
@@ -457,7 +473,7 @@ bool Request::fastly_key_is_valid() { return this->req->fastly_key_is_valid(); }
 // void handoff_fanout(fastly::backend::Backend backend);
 // Request *on_behalf_of(std::string service);
 
-void Request::set_cache_key(std::string key) {
+void Request::set_cache_key(std::string_view key) {
   this->req->set_cache_key(std::vector<uint8_t>{key.begin(), key.end()});
 }
 
@@ -465,7 +481,7 @@ void Request::set_cache_key(std::vector<uint8_t> key) {
   this->req->set_cache_key(key);
 }
 
-Request Request::with_cache_key(std::string key) {
+Request Request::with_cache_key(std::string_view key) {
   this->set_cache_key(key);
   return std::move(*this);
 }

@@ -67,20 +67,20 @@ Body Response::into_body() {
       fastly::sys::http::m_http_response_into_body(std::move(this->res)));
 }
 
-void Response::set_body_text_plain(std::string body) {
-  return this->res->set_body_text_plain(body);
+void Response::set_body_text_plain(std::string_view body) {
+  return this->res->set_body_text_plain(static_cast<std::string>(body));
 }
 
-Response Response::with_body_text_html(std::string body) {
+Response Response::with_body_text_html(std::string_view body) {
   this->set_body_text_html(body);
   return std::move(*this);
 }
 
-void Response::set_body_text_html(std::string body) {
-  return this->res->set_body_text_html(body);
+void Response::set_body_text_html(std::string_view body) {
+  return this->res->set_body_text_html(static_cast<std::string>(body));
 }
 
-Response Response::with_body_text_plain(std::string body) {
+Response Response::with_body_text_plain(std::string_view body) {
   this->set_body_text_plain(body);
   return std::move(*this);
 }
@@ -117,13 +117,13 @@ std::optional<std::string> Response::get_content_type() {
   }
 }
 
-Response Response::with_content_type(std::string mime) {
+Response Response::with_content_type(std::string_view mime) {
   this->set_content_type(mime);
   return std::move(*this);
 }
 
-void Response::set_content_type(std::string mime) {
-  this->res->set_content_type(mime);
+void Response::set_content_type(std::string_view mime) {
+  this->res->set_content_type(static_cast<std::string>(mime));
 }
 
 std::optional<size_t> Response::get_content_length() {
@@ -135,23 +135,24 @@ std::optional<size_t> Response::get_content_length() {
   }
 }
 
-bool Response::contains_header(std::string name) {
-  return this->res->contains_header(name);
+bool Response::contains_header(std::string_view name) {
+  return this->res->contains_header(static_cast<std::string>(name));
 }
 
-Response Response::with_header(std::string name, std::string value) {
+Response Response::with_header(std::string_view name, std::string_view value) {
   this->append_header(name, value);
   return std::move(*this);
 }
 
-Response Response::with_set_header(std::string name, std::string value) {
+Response Response::with_set_header(std::string_view name,
+                                   std::string_view value) {
   this->set_header(name, value);
   return std::move(*this);
 }
 
 // TODO(@zkat): do a proper HeaderValue situation here?
-std::optional<std::string> Response::get_header(std::string name) {
-  auto ptr{this->res->get_header(name)};
+std::optional<std::string> Response::get_header(std::string_view name) {
+  auto ptr{this->res->get_header(static_cast<std::string>(name))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
@@ -160,24 +161,26 @@ std::optional<std::string> Response::get_header(std::string name) {
   }
 }
 
-HeaderValuesIter Response::get_header_all(std::string name) {
-  return this->res->get_header_all(name);
+HeaderValuesIter Response::get_header_all(std::string_view name) {
+  return this->res->get_header_all(static_cast<std::string>(name));
 }
 
 // TODO(@zkat): sigh. IDK
 // ??? get_headers();
 // HeaderNamesIter get_header_names();
 
-void Response::set_header(std::string name, std::string value) {
-  this->res->set_header(name, value);
+void Response::set_header(std::string_view name, std::string_view value) {
+  this->res->set_header(static_cast<std::string>(name),
+                        static_cast<std::string>(value));
 }
 
-void Response::append_header(std::string name, std::string value) {
-  this->res->append_header(name, value);
+void Response::append_header(std::string_view name, std::string_view value) {
+  this->res->append_header(static_cast<std::string>(name),
+                           static_cast<std::string>(value));
 }
 
-std::optional<std::string> Response::remove_header(std::string name) {
-  auto ptr{this->res->remove_header(name)};
+std::optional<std::string> Response::remove_header(std::string_view name) {
+  auto ptr{this->res->remove_header(static_cast<std::string>(name))};
   if (ptr == nullptr) {
     return std::nullopt;
   } else {
