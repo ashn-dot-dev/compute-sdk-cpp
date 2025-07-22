@@ -40,7 +40,7 @@ jobs:
         run: gzip fastly-compute-sdk-cpp.tar
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@4
+        uses: actions/upload-artifact@v4
         with:
           name: fastly-compute-sdk-cpp
           path: fastly-compute-sdk-cpp.tar.gz
