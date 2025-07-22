@@ -61,10 +61,9 @@ class BackendBuilder {
 
 public:
   BackendBuilder(std::string_view name, std::string_view target)
-      : builder(std::move(
-            fastly::sys::backend::m_static_backend_backend_builder_new(
-                static_cast<std::string>(name),
-                static_cast<std::string>(target)))) {};
+      : builder(fastly::sys::backend::m_static_backend_backend_builder_new(
+            static_cast<std::string>(name), static_cast<std::string>(target))) {
+        };
   BackendBuilder override_host(std::string_view name);
   BackendBuilder connect_timeout(std::chrono::milliseconds timeout);
   BackendBuilder first_byte_timeout(std::chrono::milliseconds timeout);

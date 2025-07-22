@@ -4,8 +4,7 @@
 
 namespace fastly::http {
 
-Response::Response()
-    : res(std::move(fastly::sys::http::m_static_http_response_new())) {}
+Response::Response() : res(fastly::sys::http::m_static_http_response_new()) {}
 
 bool Response::is_from_backend() { return this->res->is_from_backend(); }
 
@@ -20,14 +19,14 @@ Response Response::clone_with_body() {
 }
 
 Response Response::from_body(Body body) {
-  Response res(std::move(fastly::sys::http::m_static_http_response_from_body(
-      std::move(body.bod))));
+  Response res(
+      fastly::sys::http::m_static_http_response_from_body(std::move(body.bod)));
   return res;
 }
 
 Response Response::from_status(StatusCode status) {
-  Response res(std::move(
-      fastly::sys::http::m_static_http_response_from_status(status.as_code())));
+  Response res(
+      fastly::sys::http::m_static_http_response_from_status(status.as_code()));
   return res;
 }
 

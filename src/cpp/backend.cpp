@@ -15,12 +15,12 @@ fastly::expected<Backend> Backend::from_name(std::string_view name) {
   }
 }
 
-Backend Backend::clone() { return std::move(this->backend->clone()); }
+Backend Backend::clone() { return this->backend->clone(); }
 
 BackendBuilder Backend::builder(std::string_view name,
                                 std::string_view target) {
-  return std::move(fastly::sys::backend::m_static_backend_backend_builder(
-      static_cast<std::string>(name), static_cast<std::string>(target)));
+  return fastly::sys::backend::m_static_backend_backend_builder(
+      static_cast<std::string>(name), static_cast<std::string>(target));
 }
 
 std::string Backend::into_string() {

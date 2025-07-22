@@ -46,13 +46,13 @@ protected:
 public:
   /// Get a new, empty HTTP body.
   Body()
-      : bod(fastly::sys::http::m_static_http_body_new()), std::iostream(this) {
+      : std::iostream(this), bod(fastly::sys::http::m_static_http_body_new()) {
     this->setg(this->gbuf.data(), this->gbuf.data(), this->gbuf.data());
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
   Body(Body &&old)
-      : bod((old.sync(), std::move(old.bod))), pbuf(std::move(old.pbuf)),
-        std::iostream(this) {
+      : std::iostream(this), bod((old.sync(), std::move(old.bod))),
+        pbuf(std::move(old.pbuf)) {
     auto gcurr{old.gptr() - old.eback()};
     auto gend{old.egptr() - old.eback()};
     this->gbuf = std::move(old.gbuf);
@@ -120,7 +120,7 @@ private:
   std::array<char, 512> pbuf;
   std::array<char, 512> gbuf;
   Body(rust::Box<fastly::sys::http::Body> body)
-      : bod(std::move(body)), std::iostream(this) {
+      : std::iostream(this), bod(std::move(body)) {
     this->setg(this->gbuf.data(), this->gbuf.data(), this->gbuf.data());
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
@@ -153,8 +153,8 @@ protected:
 
 public:
   StreamingBody(StreamingBody &&other)
-      : bod((other.sync(), std::move(other.bod))), pbuf(std::move(other.pbuf)),
-        std::ostream(this) {
+      : std::ostream(this), bod((other.sync(), std::move(other.bod))),
+        pbuf(std::move(other.pbuf)) {
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
   fastly::expected<void> finish();
@@ -167,7 +167,7 @@ public:
 
 private:
   StreamingBody(rust::Box<fastly::sys::http::StreamingBody> body)
-      : bod(std::move(body)), std::ostream(this) {
+      : std::ostream(this), bod(std::move(body)) {
     this->setp(this->pbuf.data(), this->pbuf.data() + this->pbuf.max_size());
   };
   rust::Box<fastly::sys::http::StreamingBody> bod;

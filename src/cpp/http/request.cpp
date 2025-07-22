@@ -12,17 +12,17 @@ PendingRequest::poll() {
       fastly::sys::http::request::m_http_request_pending_request_poll(
           std::move(this->req))};
   if (poll_result->is_response()) {
-    return {fastly::expected<Response>(Response(std::move(
+    return {fastly::expected<Response>(Response(
         fastly::sys::http::request::m_http_request_poll_result_into_response(
-            std::move(poll_result)))))};
+            std::move(poll_result))))};
   } else if (poll_result->is_pending()) {
-    return {PendingRequest(std::move(
+    return {PendingRequest(
         fastly::sys::http::request::m_http_request_poll_result_into_pending(
-            std::move(poll_result))))};
+            std::move(poll_result)))};
   } else {
-    return {fastly::unexpected(std::move(
+    return {fastly::unexpected(
         fastly::sys::http::request::m_http_request_poll_result_into_error(
-            std::move(poll_result))))};
+            std::move(poll_result)))};
   }
 }
 
@@ -56,8 +56,7 @@ select(std::vector<PendingRequest> &reqs) {
                                                     others, err);
   std::vector<PendingRequest> ret_others;
   for (auto &box : others) {
-    ret_others.push_back(
-        std::move(PendingRequest(std::move(box.extract_req()))));
+    ret_others.push_back(PendingRequest(box.extract_req()));
   }
   if (err != nullptr) {
     return std::make_pair(fastly::unexpected(err), std::move(ret_others));
@@ -71,8 +70,8 @@ select(std::vector<PendingRequest> &reqs) {
 } // namespace request
 
 Request::Request(Method method, std::string_view url)
-    : req(std::move(fastly::sys::http::m_static_http_request_new(
-          method, static_cast<std::string>(url)))) {}
+    : req(fastly::sys::http::m_static_http_request_new(
+          method, static_cast<std::string>(url))) {}
 
 Request Request::from_client() {
   Request req{fastly::sys::http::m_static_http_request_from_client()};
@@ -202,8 +201,8 @@ Request::send_async_streaming(fastly::backend::Backend &backend) {
   if (err != nullptr) {
     return fastly::unexpected(err);
   } else {
-    return std::make_pair(StreamingBody(std::move(res->take_body())),
-                          request::PendingRequest(std::move(res->take_req())));
+    return std::make_pair(StreamingBody(res->take_body()),
+                          request::PendingRequest(res->take_req()));
   }
 }
 

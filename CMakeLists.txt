@@ -45,12 +45,11 @@ file(GLOB_RECURSE FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.cpp" "${C
 add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
 add_library(fastly STATIC ${FASTLY_CXX} fastly-sys)
 
-# TODO(@zkat): sigh. Let's do this later. Can't do pedantic, though.
-# if(MSVC)
-#     target_compile_options(fastly PRIVATE /W4 /WX)
-# else()
-#     target_compile_options(fastly PRIVATE -Wall -Wextra -Werror)
-# endif()
+if(MSVC)
+    target_compile_options(fastly PRIVATE /W3 /WX)
+else()
+    target_compile_options(fastly PRIVATE -Wall -Wextra -Werror)
+endif()
 
 set_target_properties(
     fastly-sys fastly
