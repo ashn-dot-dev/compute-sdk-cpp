@@ -1,0 +1,46 @@
+name: Release
+
+permissions:
+  content: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install WASI SDK
+        uses: konsumer/install-wasi-sdk@v1
+        with:
+          version: "25"
+
+      - uses: extractions/setup-just@v3
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Build WebAssembly module
+        run: just
+
+      - name: Build docs
+        run: just docs
+
+      - name: Archive dist
+        run: tar cvf fastly-compute-sdk-cpp.tar -C target/release/dist fastly libfastly.a
+
+      - name: Add docs to archive
+        run: tar rvf fastly-compute-sdk-cpp.tar docs
+
+      - name: Gzip archive
+        run: gzip fastly-compute-sdk-cpp.tar
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: fastly-compute-sdk-cpp
+          path: fastly-compute-sdk-cpp.tar.gz
