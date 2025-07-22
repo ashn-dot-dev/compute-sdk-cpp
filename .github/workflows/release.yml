@@ -33,8 +33,8 @@ jobs:
       - name: Archive dist
         run: tar cvf fastly-compute-sdk-cpp.tar -C target/release/dist fastly libfastly.a
 
-      - name: Add docs to archive
-        run: tar rvf fastly-compute-sdk-cpp.tar docs
+      - name: Add docs and license to archive
+        run: tar rvf fastly-compute-sdk-cpp.tar docs LICENSE quickstart
 
       - name: Gzip archive
         run: gzip fastly-compute-sdk-cpp.tar
