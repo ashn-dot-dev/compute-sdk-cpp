@@ -1,4 +1,4 @@
-name: Build WebAssembly with WASI SDK
+name: CI
 
 on: [push, pull_request]
 
