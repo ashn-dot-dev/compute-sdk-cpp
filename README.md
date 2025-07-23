@@ -3,7 +3,7 @@
 This SDK is lets you use Fastly Compute platform directly with C++, using a
 C++-native API with all the usual facilities of modern C++. In case you got to
 this page from elsewhere, the full documentation is available online at [this
-link](https://cuddly-adventure-lrw9z3m.pages.github.io/index.html).
+link](https://cuddly-adventure-lrw9z3m.pages.github.io).
 
 #### Examples
 
@@ -20,7 +20,7 @@ To use the SDK from the prebuilt static library, all you need is:
 #### Quickstart
 
 The fastest way to get started with the SDK is to fetch
-`fastly-compute-sdk-cpp-quickstart.tar.gz` from the [latest GitHub Release's
+`fastly-compute-sdk-cpp-quickstart-vX.Y.Z.tar.gz` from the [latest GitHub Release's
 assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest). This
 tarball includes a full prebuilt version of the library, its headers, a copy of
 the full reference docs, and a set of quickstart files with a preconfigured,
@@ -29,7 +29,7 @@ CMake-based project.
 #### Just the SDK
 
 If you only need the latest version of the library, fetch
-`fastly-compute-sdk-cpp-quickstart.tar.gz` from the [latest GitHub Release's
+`fastly-compute-sdk-cpp-vX.Y.Z-quickstart.tar.gz` from the [latest GitHub Release's
 assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest) and
 place it somewhere accessible to your preferred build system.
 

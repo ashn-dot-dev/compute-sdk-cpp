@@ -31,28 +31,31 @@ jobs:
 
       - name: Build docs
         uses: mattnotmitt/doxygen-action@v1.9.5
-
+        
+      - name: Set env
+        run: echo "ARCHIVE_FILENAME_PREFIX=fastly-compute-sdk-cpp-${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        
       - name: Archive core dist
-        run: tar cvf fastly-compute-sdk-cpp.tar -C target/release/dist fastly libfastly.a
+        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar -C target/release/dist fastly libfastly.a
 
       - name: Archive quickstart dist
-        run: tar cvf fastly-compute-sdk-cpp-quickstart.tar -C target/release/dist fastly libfastly.a
+        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar -C target/release/dist fastly libfastly.a
 
       - name: Add docs and license to quickstart dist
-        run: tar rvf fastly-compute-sdk-cpp-quickstart.tar docs LICENSE
+        run: tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar docs LICENSE
 
       - name: Add quickstart files to quickstart dist
-        run: tar rvf fastly-compute-sdk-cpp-quickstart.tar -C quickstart CMakeLists.txt fastly.toml main.cpp README.md
+        run: tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar -C quickstart CMakeLists.txt fastly.toml main.cpp README.md
 
       - name: Gzip core dist
-        run: gzip fastly-compute-sdk-cpp.tar
+        run: gzip ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar
 
       - name: Gzip quickstart dist
-        run: gzip fastly-compute-sdk-cpp-quickstart.tar
+        run: gzip ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: fastly-compute-sdk-cpp*.tar.gz
+          artifacts: "${{ env.ARCHIVE_FILENAME_PREFIX }}*.tar.gz"
           artifactErrorsFailBuild: true
           artifactContentType: "application/gzip"
           generateReleaseNotes: true

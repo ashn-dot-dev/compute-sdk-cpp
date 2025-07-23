@@ -48,7 +48,10 @@ curl -d "hello, world!" http://127.0.0.1:7676/
 
 ## Documentation
 
-The release tarball includes the HTML reference docs in `docs/html/index.html`,
-which you can open locally. If you've configured your editor properly, you may
-also be able to hover over Fastly SDK symbols to see their documentation
-in-place.
+Online documentation can be accessed
+[here](https://cuddly-adventure-lrw9z3m.pages.github.io/).
+
+The quickstart tarball also includes the HTML reference docs in
+`docs/index.html`, which you can open locally. If you've configured your editor
+properly, you may also be able to hover over Fastly SDK symbols to see their
+documentation in-place.
