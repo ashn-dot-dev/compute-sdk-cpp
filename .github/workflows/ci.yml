@@ -64,7 +64,7 @@ jobs:
         run: just
 
       - name: Build docs
-        run: just docs
+        uses: mattnotmitt/doxygen-action@v1.9.5
 
       - name: Deploy docs
         uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
