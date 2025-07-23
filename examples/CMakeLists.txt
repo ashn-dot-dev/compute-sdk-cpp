@@ -16,15 +16,7 @@ set(CMAKE_C_COMPILER "${WASI_SDK}/bin/clang")
 set(CMAKE_CXX_COMPILER "${WASI_SDK}/bin/clang++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 
-if (POLICY CMP0048)
-    cmake_policy(SET CMP0048 NEW)
-endif ()
-
-project(cxx_example)
-
-set (CMAKE_CXX_STANDARD 17)
-
-option(ENABLE_LTO "Enable cross language linking time optimization" ON)
+option(ENABLE_LTO "Enable cross language linking time optimization" OFF)
 if(ENABLE_LTO)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT supported OUTPUT error)
@@ -36,6 +28,13 @@ if(ENABLE_LTO)
         message(STATUS "IPO / LTO not supported: <${error}>")
     endif()
 endif()
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif ()
+
+project(cxx_example)
+
+set (CMAKE_CXX_STANDARD 17)
 
 add_link_options(-L${WASI_SDK}/share/wasi-sysroot/lib/wasm32-wasi)
 

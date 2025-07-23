@@ -2,7 +2,7 @@
 
 This is a quickstart project that you're able to copy as-in in order to get
 started quickly. It includes a `fastly.toml` with a basic example backend, a
-`CMakeLists.txt` with some baseline configuration and a `main.cpp` file with a
+`CMakeLists.txt` with some baseline configuration, and a `main.cpp` file with a
 scaffolded request handler.
 
 ## Requirements
