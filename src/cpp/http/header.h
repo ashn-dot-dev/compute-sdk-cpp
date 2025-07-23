@@ -9,6 +9,7 @@
 
 namespace fastly::http {
 
+/// Iterates over multiple values for an individual header.
 class HeaderValuesIter {
 public:
   HeaderValuesIter(rust::Box<fastly::sys::http::HeaderValuesIter> i)

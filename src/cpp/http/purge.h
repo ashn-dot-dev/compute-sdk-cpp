@@ -15,6 +15,11 @@ namespace fastly::http::purge {
 /// [doc]: https://developer.fastly.com/learning/concepts/purging/
 fastly::expected<void> purge_surrogate_key(std::string_view surrogate_key);
 
+/// Soft-purge a surrogate key for the current service.
+///
+/// See the [Fastly purge documentation][doc] for details.
+///
+/// [doc]: https://developer.fastly.com/learning/concepts/purging/
 fastly::expected<void> soft_purge_surrogate_key(std::string_view surrogate_key);
 
 } // namespace fastly::http::purge

@@ -20,6 +20,7 @@ namespace fastly::http {
 
 class Response;
 class Request;
+class StreamingBody;
 namespace request {
 class PendingRequest;
 std::pair<fastly::expected<fastly::http::Response>, std::vector<PendingRequest>>
@@ -35,6 +36,7 @@ select(std::vector<PendingRequest> &reqs);
 /// Read and write operations to a [`Body`] are automatically buffered.
 class Body : public std::iostream, public std::streambuf {
 
+  friend StreamingBody;
   friend Response;
   friend Request;
 
@@ -113,10 +115,8 @@ public:
   //     PrefixString(rust::Box<fastly::sys::http::PrefixString> prefix) :
   //     pref(std::move(prefix)) {};
   // };
-
-  rust::Box<fastly::sys::http::Body> bod;
-
 private:
+  rust::Box<fastly::sys::http::Body> bod;
   std::array<char, 512> pbuf;
   std::array<char, 512> gbuf;
   Body(rust::Box<fastly::sys::http::Body> body)
