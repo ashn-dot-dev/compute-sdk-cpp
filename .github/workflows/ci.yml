@@ -65,11 +65,12 @@ jobs:
       - name: Build WebAssembly module
         run: just
 
-      - name: Build and deploy docs
-        uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
+      - name: Build docs
+        uses: mattnotmitt/doxygen-action@v1.9.5
+
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@v4
         if: github.ref == 'refs/heads/main'
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          config_file: Doxyfile
-          folder: docs
-          doxygen_version: 1.9.5
+          branch: gh-pages
+          folder: docs # The folder the action should deploy.
