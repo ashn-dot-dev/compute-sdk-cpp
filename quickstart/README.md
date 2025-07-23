@@ -5,7 +5,7 @@ started quickly. It includes a `fastly.toml` with a basic example backend, a
 `CMakeLists.txt` with some baseline configuration, and a `main.cpp` file with a
 scaffolded request handler.
 
-## Requirements
+### Requirements
 
 This project should be ready to use as soon as you extract the tarball from the
 GitHub release, as long as you have the following prerequisites installed:
@@ -16,7 +16,7 @@ GitHub release, as long as you have the following prerequisites installed:
 \* Located at `/opt/wasi-sdk`. If you place it elsewhere, you'll need to pass
 `-DWASI_SDK=/path/to/wasi-sdk-dist` when you configure with `cmake`.
 
-## Getting Started
+### Getting Started
 
 Assuming you're in the `quickstart` directory:
 
@@ -44,9 +44,17 @@ And you can curl the app directly from there:
 curl -d "hello, world!" http://127.0.0.1:7676/
 ```
 
+> [!tip]
+> You can make `main.cpp` significantly smaller by using `wasi-sdk`'s `strip`
+> binary, though that will remove useful debug symbols:
+>
+> ```shell
+> /opt/wasi-sdk/bin/strip build/main.wasm
+> ```
+
 ✨Happy hacking!✨
 
-## Documentation
+### Documentation
 
 Online documentation can be accessed
 [here](https://cuddly-adventure-lrw9z3m.pages.github.io/).

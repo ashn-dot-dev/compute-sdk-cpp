@@ -1,7 +1,7 @@
 # This file describes a Fastly Compute package. To learn more visit:
 # https://www.fastly.com/documentation/reference/compute/fastly-toml
 
-name = "quickstart-cpp"
+name = "fastly-cpp-quickstart"
 authors = ["you@example.com"]
 description = "Quickstart app for the C++ Fastly Compute SDK"
 # For now
@@ -10,4 +10,5 @@ manifest_version = 3
 service_id = ""
 
 [local_server]
-backends.example.url = "https://www.example.com"
+backends.fastly.url = "https://www.fastly.com"
+backends.wikipedia.url = "https://en.wikipedia.org"

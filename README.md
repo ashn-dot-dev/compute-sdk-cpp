@@ -5,17 +5,26 @@ C++-native API with all the usual facilities of modern C++. In case you got to
 this page from elsewhere, the full documentation is available online at [this
 link](https://cuddly-adventure-lrw9z3m.pages.github.io).
 
-#### Examples
+### Examples
 
-There's a [list of examples](./examples) you can refer to for a variety of tasks.
+There's a [list of examples](./examples) you can refer to for a variety of
+tasks.
 
-#### Requirements
+The examples are fully runnable right away if used as the contents of `main.cpp`
+for the `quickstart` project.
+
+### Requirements
 
 To use the SDK from the prebuilt static library, all you need is:
 
-- [`wasi-sdk`](https://github.com/WebAssembly/wasi-sdk), version `25.0`
+- [`wasi-sdk`](https://github.com/WebAssembly/wasi-sdk), version `25.0` (see note below)
 - [The Fastly CLI](https://www.fastly.com/documentation/reference/tools/cli)
   (optional, but recommended)
+
+> [!note]
+> As documented in its README, `wasi-sdk` is _typically_ installed to `/opt/wasi-sdk`
+> to reduce duplication, but you're free to install it anywhere, as long as you
+> configure your build system appropriately.
 
 #### Quickstart
 
