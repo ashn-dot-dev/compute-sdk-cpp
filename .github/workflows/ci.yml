@@ -46,6 +46,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -63,14 +65,9 @@ jobs:
       - name: Build WebAssembly module
         run: just
 
-      - name: Build docs
-        uses: mattnotmitt/doxygen-action@v1.9.5
-
-      - name: Deploy docs
+      - name: Build and deploy docs
         uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: docs/html
           config_file: Doxyfile
