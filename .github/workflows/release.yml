@@ -11,6 +11,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,8 +41,11 @@ jobs:
       - name: Gzip archive
         run: gzip fastly-compute-sdk-cpp.tar
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - uses: ncipollo/release-action@v1
         with:
-          name: fastly-compute-sdk-cpp
-          path: fastly-compute-sdk-cpp.tar.gz
+          artifacts: fastly-compute-sdk-cpp.tar.gz
+          artifactErrorsFailBuild: true
+          artifactContentType: "application/gzip"
+          generateReleaseNotes: true
+          draft: true
+          prerelease: true
