@@ -1,50 +1,51 @@
-# compute-sdk-cpp
+# Fastly Compute C++ SDK
 
-C++ SDK for Fastly Compute.
+This SDK is lets you use Fastly Compute platform directly with C++, using a
+C++-native API with all the usual facilities of modern C++. In case you got to
+this page from elsewhere, the full documentation is available online at [this
+link](https://cuddly-adventure-lrw9z3m.pages.github.io/index.html).
 
-Full API documentation is available at https://fastly.github.io/compute-sdk-cpp, or can be [browsed locally](./docs/html/index.html).
+#### Examples
 
-### Example(s)
+There's a [list of examples](./examples) you can refer to for a variety of tasks.
 
-To run the "hello world" example (see `./examples/echo.cpp`), you can use:
+#### Requirements
 
-```sh
-just example
-```
+To use the SDK from the prebuilt static library, all you need is:
 
-To run any other examples, you can use:
+- [`wasi-sdk`](https://github.com/WebAssembly/wasi-sdk), version `25.0`
+- [The Fastly CLI](https://www.fastly.com/documentation/reference/tools/cli)
+  (optional, but recommended)
 
-```sh
-just example example-name
-```
+#### Quickstart
 
-Where `example-name` will refer to a corresponding `example-name.cpp` in the `examples/` directory. Every example will have appropriate links and explanations to what it's doing.
+The fastest way to get started with the SDK is to fetch
+`fastly-compute-sdk-cpp-quickstart.tar.gz` from the [latest GitHub Release's
+assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest). This
+tarball includes a full prebuilt version of the library, its headers, a copy of
+the full reference docs, and a set of quickstart files with a preconfigured,
+CMake-based project.
 
-### Requirements
+#### Just the SDK
 
-- `rustc` + `cargo` (use [`rustup`](https://rustup.sh) to install/manage) \*
-- `wasi-sdk` (must use LLVM 19 or higher) \*\* \*\*\*
-- `cmake`
-- `make`
-- `doxygen` (if you want to build documentation)
-- `just` (optional. See `justfile` for equivalent commands to the ones documented below.)
+If you only need the latest version of the library, fetch
+`fastly-compute-sdk-cpp-quickstart.tar.gz` from the [latest GitHub Release's
+assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest) and
+place it somewhere accessible to your preferred build system.
 
-\* Must be `1.86.0` or higher.
+The `libfastly.a` file is a fully-linked, static library/archive built against
+`wasi-sdk@25.0`. It is fairly large, as it includes every possible call, so it
+is recommended that you use IPO/LTO to reduce your final `main.wasm` file size
+to only what's actually used. If you're using CMake, see
+[CheckIPOSupported](https://cmake.org/cmake/help/latest/module/CheckIPOSupported.html)
+and [CMP0069](https://cmake.org/cmake/help/latest/policy/CMP0069.html), or
+simply reference the `quickstart` project for a working example configuration.
 
-\*\* `wasi-sdk-25.0` is only compatible with `rustc` versions up to `1.86.0`. If you use `1.87.0` or later, you'll need to use a higher `wasi-sdk` version. If building this project manually, you must make sure that the version of `wasi-sdk` version you're using has an equal or greater LLVM version than the one used by your `rustc`.
+All header files are included in the `fastly/` folder. You can choose to import
+individual headers only for the things you need, or to import the entire Fastly
+SDK using `#include "fastly/sdk.h"`.
 
-\*\*\* The build script assumes you're installing `wasi-sdk` to `/opt/wasi-sdk`. You can specify a custom path using `--set wasi-sdk /path/to/wasi-sdk-dist` in `just`, or `-DWASI_SDK=/path/to/wasi-sdk-dist` if using `cmake` along.
+#### Building from source
 
-### Building Static library
-
-```sh
-just
-```
-
-#### Using a different `wasi-sdk`
-
-```sh
-just --set wasi-sdk /path/to/your/wasi-sdk-XX.Y
-```
-
-#### Building the docs
+Building the SDK from sources involves a few more requirements and steps. Please
+refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for more details.

@@ -1,8 +1,7 @@
+//! @example router.cpp
 #include "fastly/sdk.h"
 #include <iostream>
 #include <regex>
-
-using namespace std::string_literals;
 
 // NOTE: Please evaluate the SECURITY of this for your own purposes if you base
 // your code on this. `std::regex` is vulnerable to ReDOS and is not suitable

@@ -1,3 +1,4 @@
+//! @example device_detection.cpp
 #include "fastly/sdk.h"
 #include <iostream>
 #include <optional>

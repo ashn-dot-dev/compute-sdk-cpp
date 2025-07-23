@@ -1,3 +1,4 @@
+//! @example echo.cpp
 #include "fastly/sdk.h"
 #include <iostream>
 

@@ -1,7 +1,6 @@
+//! @example streaming_response.cpp
 #include "fastly/sdk.h"
 #include <iostream>
-
-using namespace std::string_literals;
 
 int main() {
   auto backend_resp{

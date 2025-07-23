@@ -1,3 +1,4 @@
+//! @example clock.cpp
 #include "fastly/sdk.h"
 #include <chrono>
 #include <ctime>

@@ -44,4 +44,4 @@ add_executable(${EXAMPLE_NAME} ${EXAMPLE_NAME}.cpp)
 
 set_target_properties(${EXAMPLE_NAME} PROPERTIES SUFFIX .wasm)
 target_include_directories(${EXAMPLE_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/../../${TARGET_DIR})
-target_link_libraries(${EXAMPLE_NAME} fastly)
+target_link_libraries(${EXAMPLE_NAME} fastly-thin)

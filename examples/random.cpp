@@ -1,3 +1,4 @@
+//! @example random.cpp
 #include "fastly/sdk.h"
 #include <iostream>
 #include <random>

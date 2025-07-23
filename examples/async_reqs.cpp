@@ -1,7 +1,7 @@
+//! @example async_reqs.cpp
 #include "fastly/sdk.h"
 #include "request.h"
 #include <iostream>
-#include <iterator>
 
 using namespace std::string_literals;
 

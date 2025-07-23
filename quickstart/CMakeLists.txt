@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Set this wherever you have the `libfastly.a` + `fastly/*.h`
-set(FASTLY_RELEASE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(FASTLY_RELEASE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(!WASI_SDK)
     set(WASI_SDK "/opt/wasi-sdk")
