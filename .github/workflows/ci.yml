@@ -64,6 +64,9 @@ jobs:
         run: just
 
       - name: Build docs
+        run: just docs
+
+      - name: Deploy docs
         uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
         if: github.ref == 'refs/heads/main'
         with:

@@ -1,6 +1,6 @@
 # compute-sdk-cpp
 
-Creates a static library for C++ usage.
+C++ SDK for Fastly Compute.
 
 Full API documentation is available at https://fastly.github.io/compute-sdk-cpp, or can be [browsed locally](./docs/html/index.html).
 
