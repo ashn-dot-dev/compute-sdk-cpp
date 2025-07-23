@@ -62,7 +62,7 @@ file(GLOB_RECURSE FASTLY_CXX "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.cpp" "${C
 
 add_library(fastly-sys STATIC ${FASTLY_SYS_CXX})
 add_library(fastly-sys-orig STATIC IMPORTED)
-add_library(fastly-thin STATIC ${FASTLY_CXX} fastly-sys)
+add_library(fastly-thin STATIC ${FASTLY_CXX} fastly-sys ${CMAKE_CURRENT_SOURCE_DIR}/vendor/tl/expected.h)
 set_target_properties(fastly-sys-orig PROPERTIES IMPORTED_LOCATION ${FASTLY_SYS_LIB})
 
 if(MSVC)
@@ -189,12 +189,13 @@ function(bundle_static_library tgt_name bundled_tgt_name)
 endfunction()
 bundle_static_library(fastly-thin fastly)
 
-file(GLOB_RECURSE FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/vendor/**/*.h")
+file(GLOB_RECURSE FASTLY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/**/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/*.h")
 foreach(f ${FASTLY_HEADERS})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/cpp" ${f})
     configure_file(${f} ${DIST_DIR}/fastly/${fr} COPYONLY)
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach(f)
+list(APPEND incls "#include \"expected.h\"\n")
 file(WRITE ${DIST_DIR}/fastly/sdk.h ${incls})
 
 add_test(NAME fastly_test
