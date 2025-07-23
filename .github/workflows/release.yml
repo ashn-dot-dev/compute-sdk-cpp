@@ -42,7 +42,7 @@ jobs:
         run: tar rvf fastly-compute-sdk-cpp-quickstart.tar docs LICENSE
 
       - name: Add quickstart files to quickstart dist
-        run: tar rvf fastly-compute-sdk-cpp-quickstart.tar -C quickstart *
+        run: tar rvf fastly-compute-sdk-cpp-quickstart.tar -C quickstart CMakeLists.txt fastly.toml main.cpp README.md
 
       - name: Gzip core dist
         run: gzip fastly-compute-sdk-cpp.tar
