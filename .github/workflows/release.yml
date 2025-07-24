@@ -67,11 +67,11 @@ jobs:
 
       - name: Concat wasi-sdks into fat quickstart tarballs
         run: |
-          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-arm64-linux.tar.gz
-          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-macos.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-arm64-macos.tar.gz
-          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-macos.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64-macos.tar.gz
-          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64-linux.tar.gz
-          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64-windows.tar.gz
+          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar.gz
+          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-macos.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar.gz
+          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-macos.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar.gz
+          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar.gz
+          cat ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar.gz wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows.tar.gz > ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar.gz
 
       - uses: ncipollo/release-action@v1
         with:
