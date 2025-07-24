@@ -46,7 +46,8 @@ just
 #### Building in Debug mode
 
 ```sh
-
+just --set type Debug
+```
 
 #### Using a different `wasi-sdk`
 
