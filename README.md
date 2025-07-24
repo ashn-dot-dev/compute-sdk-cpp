@@ -42,7 +42,7 @@ after downloading will be `cmake`.
 #### Just the SDK
 
 If you only need the latest version of the library, fetch
-`fastly-compute-sdk-cpp-vX.Y.Z-quickstart.tar.gz` from the [latest GitHub Release's
+`fastly-cpp-vX.Y.Z.tar.gz` from the [latest GitHub Release's
 assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest) and
 place it somewhere accessible to your preferred build system.
 
