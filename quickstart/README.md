@@ -10,33 +10,27 @@ scaffolded request handler.
 This project should be ready to use as soon as you extract the tarball from the
 GitHub release, as long as you have the following prerequisites installed:
 
-- `wasi-sdk`, version `25.0` \*
 - `cmake` and `make`
+- `wasi-sdk`, version `25.0` \*
 
-\* Located at `/opt/wasi-sdk`. If you place it elsewhere, you'll need to pass
-`-DWASI_SDK=/path/to/wasi-sdk-dist` when you configure with `cmake`.
+\* Already included if you used one of the `-quickstart-wasi-sdk-` tarballs.
+Otherwise, assumed to be located at `/opt/wasi-sdk`. If you place it elsewhere,
+you'll need to pass `-DWASI_SDK=/path/to/wasi-sdk-dist` when you configure with
+`cmake`.
 
 ### Getting Started
 
-Assuming you're in the `quickstart` directory:
+Assuming you're in the `quickstart` directory, you should be able to simply use
+the [Fastly CLI](https://www.fastly.com/documentation/reference/cli/) to run
+your Compute app locally:
 
 ```shell
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=/opt/wasi-sdk/share/cmake/wasi-sdk-p1.cmake
+fastly compute serve --watch
 ```
 
-Then, run the build:
-
-```shell
-cmake --build build
-```
-
-Now you should be able to use the [Fastly
-CLI](https://www.fastly.com/documentation/reference/cli/) to run your Compute
-app locally:
-
-```shell
-fastly compute serve -C examples --file build/main.wasm
-```
+> [!note]
+> This relies on `scripts.build` in the quickstart's `fastly.toml`. You can use
+> that as a baseline for your own command running setup.
 
 And you can curl the app directly from there:
 
@@ -49,7 +43,8 @@ curl -d "hello, world!" http://127.0.0.1:7676/
 > binary, though that will remove useful debug symbols:
 >
 > ```shell
-> /opt/wasi-sdk/bin/strip build/main.wasm
+> # You can add this to your fastly.toml build script
+> /opt/wasi-sdk/bin/strip bin/main.wasm
 > ```
 
 ✨Happy hacking!✨

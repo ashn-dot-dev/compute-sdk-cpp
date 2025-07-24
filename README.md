@@ -28,12 +28,16 @@ To use the SDK from the prebuilt static library, all you need is:
 
 #### Quickstart
 
-The fastest way to get started with the SDK is to fetch
-`fastly-compute-sdk-cpp-quickstart-vX.Y.Z.tar.gz` from the [latest GitHub Release's
-assets list](https://github.com/fastly/compute-sdk-cpp/releases/latest). This
-tarball includes a full prebuilt version of the library, its headers, a copy of
-the full reference docs, and a set of quickstart files with a preconfigured,
-CMake-based project.
+The fastest way to get started with the SDK is to fetch one of the `quickstart`
+tarballs from the [latest GitHub Release's assets
+list](https://github.com/fastly/compute-sdk-cpp/releases/latest). This tarball
+includes a full prebuilt version of the library, its headers, a copy of the full
+reference docs, and a set of quickstart files with a preconfigured, CMake-based
+project.
+
+The tarballs that include `-wasi-sdk-` in their name additionally include a full
+copy of an appropriate `wasi-sdk` version such that your only system requirement
+after downloading will be `cmake`.
 
 #### Just the SDK
 
