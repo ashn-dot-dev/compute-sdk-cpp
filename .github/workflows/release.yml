@@ -72,11 +72,11 @@ jobs:
 
       - name: Add wasi-sdks into fat quickstart tarballs
         run: |
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux.tar.gz
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux.tar.gz
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux.tar.gz
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux.tar.gz
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows.tar.gz
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-macos
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-macos
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows
 
       - name: Gzip tarballs
         run: gzip ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
