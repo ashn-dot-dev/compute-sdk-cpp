@@ -52,11 +52,11 @@ jobs:
 
       - name: Copy quickstart dist tar to multiple platforms
         run: |
-          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-arm64-macos.tar
-          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-arm64-linux.tar
-          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64_macos.tar
-          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64_linux.tar
-          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart-x86_64_windows.tar
+          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
+          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
+          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
+          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
+          cp ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
 
       - name: Fetch wasi-sdk tarballs
         run: |
@@ -74,7 +74,7 @@ jobs:
         run: |
           tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-linux
           tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-arm64-macos
-          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-macos
+          tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux
           tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-linux
           tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows
 
