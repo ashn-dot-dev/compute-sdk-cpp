@@ -79,7 +79,7 @@ jobs:
           tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-x86_64-windows.tar.gz
 
       - name: Gzip tarballs
-        run: gzip ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macox-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
+        run: gzip ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-arm64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-linux-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-macos-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar ${{ env.ARCHIVE_FILENAME_PREFIX }}-x86_64-windows-wasi-sdk-${{ env.WASI_SDK_VERSION }}.0-quickstart.tar
 
       - uses: ncipollo/release-action@v1
         with:
