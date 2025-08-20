@@ -6,8 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "../sdk-sys.h"
-#include "../util.h"
+#include <fastly/sdk-sys.h>
 
 namespace fastly::detail {
 // A CRTP class that adapts a Rust-style iterator to a C++ range.

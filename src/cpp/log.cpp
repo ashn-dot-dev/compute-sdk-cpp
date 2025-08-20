@@ -1,5 +1,6 @@
-#include "log.h"
-#include "sdk-sys.h"
+#include "util.h"
+#include <fastly/log.h>
+#include <fastly/sdk-sys.h>
 
 namespace fastly::log {
 

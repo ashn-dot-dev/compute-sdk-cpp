@@ -1,16 +1,15 @@
 #ifndef FASTLY_HTTP_RESPONSE_H
 #define FASTLY_HTTP_RESPONSE_H
 
-#include "../backend.h"
-#include "../error.h"
-#include "../sdk-sys.h"
-#include "../util.h"
-#include "body.h"
-#include "http.h"
-#include "header.h"
-#include "request.h"
-#include "status_code.h"
 #include <chrono>
+#include <fastly/backend.h>
+#include <fastly/error.h>
+#include <fastly/http/body.h>
+#include <fastly/http/header.h>
+#include <fastly/http/http.h>
+#include <fastly/http/request.h>
+#include <fastly/http/status_code.h>
+#include <fastly/sdk-sys.h>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -289,7 +288,7 @@ public:
   fastly::expected<HeaderValuesRange> get_header_all(std::string_view name);
   fastly::expected<HeadersRange> get_headers();
   fastly::expected<HeaderNamesRange> get_header_names();
-  
+
   /// Set a response header to the given value, discarding any previous values
   /// for the given header name.
   fastly::expected<void> set_header(std::string_view name,

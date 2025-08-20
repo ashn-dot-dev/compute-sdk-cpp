@@ -1,6 +1,7 @@
-#include "response.h"
-#include "error.h"
-#include "sdk-sys.h"
+#include "../util.h"
+#include <fastly/error.h>
+#include <fastly/http/response.h>
+#include <fastly/sdk-sys.h>
 
 namespace fastly::http {
 
