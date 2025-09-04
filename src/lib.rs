@@ -1,4 +1,6 @@
-#![allow(clippy::boxed_local)]
+// Clippy has a few false positives in this crate for lifetimes and boxing
+// due to the way cxx works.
+#![allow(clippy::boxed_local, clippy::needless_lifetimes)]
 
 use backend::*;
 use config_store::*;
@@ -8,6 +10,7 @@ use geo::*;
 use http::{
     body::*, header::*, purge::*, request::request::*, request::*, response::*, status_code::*,
 };
+use kv_store::*;
 use log::*;
 use secret_store::*;
 
@@ -17,6 +20,7 @@ mod device_detection;
 mod error;
 mod geo;
 mod http;
+mod kv_store;
 mod log;
 mod secret_store;
 
@@ -341,7 +345,7 @@ mod ffi {
             mut is_sensitive_out: Pin<&mut bool>,
         ) -> bool;
         // Needed to force generation of `drop`.
-        fn f_header_values_iter_noop(val: Box<HeaderValuesIter>) -> Box<HeaderValuesIter>;
+        fn f_header_values_iter_force_symbols(val: Box<HeaderValuesIter>) -> Box<HeaderValuesIter>;
     }
 
     #[namespace = "fastly::sys::http"]
@@ -349,7 +353,7 @@ mod ffi {
         type HeaderNamesIter;
         fn next(&mut self, mut out: Pin<&mut CxxString>) -> bool;
         // Needed to force generation of `drop`.
-        fn f_header_names_iter_noop(val: Box<HeaderNamesIter>) -> Box<HeaderNamesIter>;
+        fn f_header_names_iter_force_symbols(val: Box<HeaderNamesIter>) -> Box<HeaderNamesIter>;
     }
 
     #[namespace = "fastly::sys::http"]
@@ -357,7 +361,7 @@ mod ffi {
         type OriginalHeaderNamesIter;
         fn next(&mut self, mut out: Pin<&mut CxxString>) -> bool;
         // Needed to force generation of `drop`.
-        fn f_original_header_names_iter_noop(
+        fn f_original_header_names_iter_force_symbols(
             val: Box<OriginalHeaderNamesIter>,
         ) -> Box<OriginalHeaderNamesIter>;
     }
@@ -372,7 +376,7 @@ mod ffi {
             mut is_sensitive_out: Pin<&mut bool>,
         ) -> bool;
         // Needed to force generation of `drop`.
-        fn f_headers_iter_noop(val: Box<HeadersIter>) -> Box<HeadersIter>;
+        fn f_headers_iter_force_symbols(val: Box<HeadersIter>) -> Box<HeadersIter>;
     }
 
     #[namespace = "fastly::sys::http"]
@@ -678,7 +682,7 @@ mod ffi {
         fn is_desktop(&self) -> *const bool;
         fn is_touchscreen(&self) -> *const bool;
         // Get it to generate the appropriate symbols like ::drop() etc.
-        fn f_device_detection_noop(dev: Box<Device>) -> Box<Device>;
+        fn f_device_detection_force_symbols(dev: Box<Device>) -> Box<Device>;
     }
 
     #[namespace = "fastly::sys::config_store"]
@@ -794,5 +798,224 @@ mod ffi {
         fn echo_stdout(&mut self, enabled: bool);
         fn echo_stderr(&mut self, enabled: bool);
         fn init(&mut self);
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    #[derive(Copy, Clone, Debug)]
+    #[repr(usize)]
+    pub enum KVStoreErrorCode {
+        InvalidKey,
+        InvalidStoreHandle,
+        InvalidStoreOptions,
+        ItemBadRequest,
+        ItemNotFound,
+        ItemPreconditionFailed,
+        ItemPayloadTooLarge,
+        StoreNotFound,
+        TooManyRequests,
+        Unexpected,
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type KVStoreError;
+        fn error_msg(&self, mut out: Pin<&mut CxxString>);
+        fn error_code(&self) -> KVStoreErrorCode;
+        fn f_kv_store_kv_store_error_force_symbols(x: Box<KVStoreError>) -> Box<KVStoreError>;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    #[derive(Copy, Clone, Debug)]
+    pub enum InsertMode {
+        Overwrite,
+        Add,
+        Append,
+        Prepend,
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    #[derive(Copy, Clone, Debug)]
+    pub enum ListModeType {
+        Strong,
+        Eventual,
+        Other,
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type InsertBuilder<'a>;
+        fn m_kv_store_insert_builder_mode(
+            mut builder: Box<InsertBuilder>,
+            mode: InsertMode,
+        ) -> Box<InsertBuilder>;
+        fn m_kv_store_insert_builder_background_fetch(
+            mut builder: Box<InsertBuilder>,
+        ) -> Box<InsertBuilder>;
+        fn m_kv_store_insert_builder_if_generation_match(
+            mut builder: Box<InsertBuilder>,
+            generation: u64,
+        ) -> Box<InsertBuilder>;
+        unsafe fn m_kv_store_insert_builder_metadata<'a>(
+            mut builder: Box<InsertBuilder<'a>>,
+            data: &CxxString,
+        ) -> Box<InsertBuilder<'a>>;
+        fn m_kv_store_insert_builder_time_to_live(
+            mut builder: Box<InsertBuilder>,
+            ttl: u32,
+        ) -> Box<InsertBuilder>;
+        fn m_kv_store_insert_builder_execute(
+            builder: Box<InsertBuilder>,
+            key: &CxxString,
+            body: Box<Body>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn m_kv_store_insert_builder_execute_async(
+            builder: Box<InsertBuilder>,
+            key: &CxxString,
+            body: Box<Body>,
+            mut out: Pin<&mut u32>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type LookupResponse;
+        fn take_body(&mut self) -> Box<Body>;
+        fn try_take_body(&mut self, mut out: Pin<&mut *mut Body>) -> bool;
+        fn take_body_bytes(&mut self, mut out: Pin<&mut CxxVector<u8>>);
+        fn metadata(&self, mut out: Pin<&mut CxxVector<u8>>) -> bool;
+        fn current_generation(&self) -> u64;
+        fn f_kv_store_lookup_response_force_symbols(x: Box<LookupResponse>) -> Box<LookupResponse>;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type LookupBuilder<'a>;
+        fn execute(
+            &self,
+            key: &str,
+            mut out: Pin<&mut *mut LookupResponse>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn execute_async(
+            &self,
+            key: &str,
+            mut out: Pin<&mut u32>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type EraseBuilder<'a>;
+        fn execute(&self, key: &str, mut err: Pin<&mut *mut KVStoreError>);
+        fn execute_async(
+            &self,
+            key: &str,
+            mut out: Pin<&mut u32>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type ListPage;
+        fn keys(&self) -> &[String];
+        fn next_cursor(&self, out: Pin<&mut CxxString>) -> bool;
+        fn prefix(&self, out: Pin<&mut CxxString>) -> bool;
+        fn limit(&self) -> u32;
+        fn mode(&self) -> Box<ListMode>;
+        fn m_kv_store_list_page_into_keys(page: Box<ListPage>) -> Vec<String>;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type ListBuilder<'a>;
+        fn execute_async(&self, mut out: Pin<&mut u32>, mut err: Pin<&mut *mut KVStoreError>);
+        fn m_kv_store_list_builder_execute(
+            builder: Box<ListBuilder>,
+            mut out: Pin<&mut *mut ListPage>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn m_kv_store_list_builder_eventual_consistency(
+            mut builder: Box<ListBuilder>,
+        ) -> Box<ListBuilder>;
+        unsafe fn m_kv_store_list_builder_cursor<'a>(
+            mut builder: Box<ListBuilder<'a>>,
+            cursor: &str,
+        ) -> Box<ListBuilder<'a>>;
+        fn m_kv_store_list_builder_limit(
+            mut builder: Box<ListBuilder>,
+            limit: u32,
+        ) -> Box<ListBuilder>;
+        unsafe fn m_kv_store_list_builder_prefix<'a>(
+            mut builder: Box<ListBuilder<'a>>,
+            prefix: &str,
+        ) -> Box<ListBuilder<'a>>;
+        fn m_kv_store_list_builder_iter(builder: Box<ListBuilder<'_>>) -> Box<ListResponse<'_>>;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type KVStore;
+        fn lookup(
+            &self,
+            key: &str,
+            mut out: Pin<&mut *mut LookupResponse>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        unsafe fn build_lookup(&self) -> Box<LookupBuilder<'_>>;
+        fn pending_lookup_wait(
+            &self,
+            pending_request_handle: u32,
+            mut out: Pin<&mut *mut LookupResponse>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn insert(&self, key: &str, value: Box<Body>, mut err: Pin<&mut *mut KVStoreError>);
+        unsafe fn build_insert(&self) -> Box<InsertBuilder<'_>>;
+        fn pending_insert_wait(
+            &self,
+            pending_insert_handle: u32,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn erase(&self, key: &str, mut err: Pin<&mut *mut KVStoreError>);
+        fn build_erase(&self) -> Box<EraseBuilder<'_>>;
+        fn pending_erase_wait(
+            &self,
+            pending_delete_handle: u32,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn list(&self, mut out: Pin<&mut *mut ListPage>, mut err: Pin<&mut *mut KVStoreError>);
+        fn build_list(&self) -> Box<ListBuilder<'_>>;
+        fn pending_list_wait(
+            &self,
+            pending_request_handle: u32,
+            mut out: Pin<&mut *mut ListPage>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        );
+        fn m_static_kv_store_kv_store_open(
+            name: &str,
+            mut out: Pin<&mut *mut KVStore>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        ) -> bool;
+        fn f_kv_store_kv_store_force_symbols(kv_store: Box<KVStore>) -> Box<KVStore>;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type ListMode;
+        fn code(&self) -> ListModeType;
+        fn other_string(&self, out: Pin<&mut CxxString>) -> bool;
+    }
+
+    #[namespace = "fastly::sys::kv_store"]
+    extern "Rust" {
+        type ListResponse<'a>;
+        fn next(
+            &mut self,
+            mut out: Pin<&mut *mut ListPage>,
+            mut err: Pin<&mut *mut KVStoreError>,
+        ) -> bool;
     }
 }

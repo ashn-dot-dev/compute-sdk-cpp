@@ -15,6 +15,12 @@
 #include <string_view>
 #include <vector>
 
+namespace fastly::kv_store {
+class InsertBuilder;
+class LookupResponse;
+class KVStore;
+} // namespace fastly::kv_store
+
 namespace fastly::http {
 
 class Response;
@@ -38,6 +44,9 @@ class Body : public std::iostream, public std::streambuf {
   friend StreamingBody;
   friend Response;
   friend Request;
+  friend kv_store::InsertBuilder;
+  friend kv_store::LookupResponse;
+  friend kv_store::KVStore;
 
 protected:
   int underflow();
@@ -94,6 +103,12 @@ public:
   /// Appends request or response trailers to the body.
   fastly::expected<void> append_trailer(std::string_view header_name,
                                         std::string_view header_value);
+
+  /// Take the entire body as a string.
+  std::string take_body_string() {
+    return std::string(std::istreambuf_iterator<char>(this->rdbuf()),
+                       std::istreambuf_iterator<char>());
+  }
 
   // TODO(@zkat): this needs a HeaderMap wrapper.
   // HeaderMap get_trailers();
