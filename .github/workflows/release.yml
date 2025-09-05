@@ -42,10 +42,10 @@ jobs:
         run: cmake --install target --prefix target/release/dist
 
       - name: Archive core dist
-        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar -C target/release/dist fastly libfastly.a
+        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar -C target/release/dist lib include
 
       - name: Archive quickstart dist
-        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar -C target/release/dist fastly libfastly.a
+        run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar -C target/release/dist lib include
 
       - name: Add docs and license to quickstart dist
         run: tar rvf ${{ env.ARCHIVE_FILENAME_PREFIX }}-quickstart.tar docs LICENSE
