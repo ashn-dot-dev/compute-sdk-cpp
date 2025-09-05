@@ -39,7 +39,7 @@ jobs:
         run: echo "ARCHIVE_FILENAME_PREFIX=fastly-cpp-${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Install SDK
-        run: cmake --install . --prefix target/release/dist
+        run: cmake --install target --prefix target/release/dist
 
       - name: Archive core dist
         run: tar cvf ${{ env.ARCHIVE_FILENAME_PREFIX }}.tar -C target/release/dist fastly libfastly.a
