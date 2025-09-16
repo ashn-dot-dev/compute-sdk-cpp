@@ -1,7 +1,7 @@
 # From https://github.com/XiangpengHao/cxx-cmake-example/blob/master/fastly/CMakeLists.txt
 cmake_minimum_required(VERSION 3.29)
 
-project(compute-sdk-cpp VERSION 0.3.0 LANGUAGES CXX)
+project(compute-sdk-cpp VERSION 0.4.0 LANGUAGES CXX)
 
 if(VERBOSE)
     set(VERBOSE_FLAG "--verbose")
@@ -83,6 +83,9 @@ add_custom_command(
 )
 
 target_include_directories(fastly-thin PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}/include)
+target_include_directories(fastly-sys PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}/include)
 

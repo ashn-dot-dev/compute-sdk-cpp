@@ -6,6 +6,7 @@ use backend::*;
 use config_store::*;
 use device_detection::*;
 use error::*;
+use esi::*;
 use geo::*;
 use http::{
     body::*, header::*, purge::*, request::request::*, request::*, response::*, status_code::*,
@@ -18,6 +19,7 @@ mod backend;
 mod config_store;
 mod device_detection;
 mod error;
+mod esi;
 mod geo;
 mod http;
 mod kv_store;
@@ -49,6 +51,7 @@ mod ffi {
         SecretStoreOpenError,
         SecretStoreLookupError,
         LogError,
+        ESIError,
     }
 
     #[namespace = "fastly::sys::http"]
@@ -218,6 +221,15 @@ mod ffi {
         Info = 3,
         Debug = 4,
         Trace = 5,
+    }
+
+    #[namespace = "fastly::sys::esi"]
+    #[repr(usize)]
+    pub enum DispatchFragmentRequestFnResult {
+        Error = 0,
+        PendingRequest = 1,
+        CompletedRequest = 2,
+        NoContent = 3,
     }
 
     #[namespace = "fastly::sys::error"]
@@ -1016,6 +1028,77 @@ mod ffi {
             &mut self,
             mut out: Pin<&mut *mut ListPage>,
             mut err: Pin<&mut *mut KVStoreError>,
+        ) -> bool;
+    }
+
+    // These tag types are empty types used to communicate callbacks from C++ to Rust.
+    // They will be cast back to the real callback types on the C++ side.
+    #[namespace = "fastly::detail::rust_bridge_tags::esi"]
+    unsafe extern "C++" {
+        include!("fastly/detail/rust_bridge_tags.h");
+        type DispatchFragmentRequestFnTag;
+        type ProcessFragmentResponseFnTag;
+    }
+
+    #[namespace = "fastly::sys::esi"]
+    extern "Rust" {
+        type Processor;
+        pub unsafe fn m_esi_processor_process_response(
+            processor: Box<Processor>,
+            src_document: &mut Response,
+            // SAFETY: this parameter models an Option<Box<Response>>, but CXX does not
+            // support this type directly. Care must be taken to take ownership of the pointer
+            // and free it if it is non-null.
+            client_response_metadata: *mut Response,
+            dispatch_fragment_request: *const DispatchFragmentRequestFnTag,
+            process_fragment_response: *const ProcessFragmentResponseFnTag,
+            mut err: Pin<&mut *mut FastlyError>,
+        ) -> bool;
+        pub unsafe fn m_esi_processor_process_document(
+            processor: Box<Processor>,
+            src_document: &CxxString,
+            dispatch_fragment_request: *const DispatchFragmentRequestFnTag,
+            process_fragment_response: *const ProcessFragmentResponseFnTag,
+            out: Pin<&mut CxxString>,
+            mut err: Pin<&mut *mut FastlyError>,
+        ) -> bool;
+        pub unsafe fn m_static_esi_processor_new(
+            // SAFETY: this parameter models an Option<Box<Request>>, but CXX does not
+            // support this type directly. Care must be taken to take ownership of the pointer
+            // and free it if it is non-null.
+            original_request_metadata: *mut Request,
+            namespc: &CxxString,
+            is_escaped_content: bool,
+        ) -> Box<Processor>;
+    }
+}
+
+// Some types (notably callback functions) are not supported by CXX at all, so we
+// define manual FFI bindings for them here.
+mod manual_ffi {
+    use crate::ffi::{
+        DispatchFragmentRequestFnResult, DispatchFragmentRequestFnTag, ProcessFragmentResponseFnTag,
+    };
+
+    // We never rely on the layout of Rust types passed to these functions,
+    // so we can ignore the improper_ctypes warning.
+    #[allow(improper_ctypes)]
+    unsafe extern "C" {
+        // The link names here must exactly match the names of the extern "C" functions defined on the C++ side
+        #[link_name = "fastly$esi$manualbridge$DispatchFragmentRequestFn$call"]
+        pub(crate) fn fastly_esi_manualbridge_DispatchFragmentRequestFn_call(
+            func: *const DispatchFragmentRequestFnTag,
+            req: *mut crate::Request,
+            out_pending: &mut *mut crate::PendingRequest,
+            out_complete: &mut *mut crate::Response,
+        ) -> DispatchFragmentRequestFnResult;
+
+        #[link_name = "fastly$esi$manualbridge$ProcessFragmentResponseFn$call"]
+        pub(crate) fn fastly_esi_manualbridge_ProcessFragmentResponseFn_call(
+            func: *const ProcessFragmentResponseFnTag,
+            request: *mut crate::Request,
+            response: *mut crate::Response,
+            out_response: &mut *mut crate::Response,
         ) -> bool;
     }
 }

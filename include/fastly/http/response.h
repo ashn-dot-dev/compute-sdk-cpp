@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <fastly/backend.h>
+#include <fastly/detail/access_bridge_internals.h>
 #include <fastly/error.h>
 #include <fastly/http/body.h>
 #include <fastly/http/header.h>
@@ -91,6 +92,7 @@ select(std::vector<PendingRequest> &reqs);
 /// resp.send_to_client();
 /// ```
 class Response {
+  friend detail::AccessBridgeInternals;
   friend Request;
   friend request::PendingRequest;
   friend std::pair<fastly::expected<Response>,
@@ -554,6 +556,7 @@ public:
   std::optional<std::chrono::milliseconds> get_stale_while_revalidate();
 
 private:
+  auto &inner() { return res; }
   Response(rust::Box<fastly::sys::http::Response> response)
       : res(std::move(response)) {};
   rust::Box<fastly::sys::http::Response> res;

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <fastly/backend.h>
+#include <fastly/detail/access_bridge_internals.h>
 #include <fastly/error.h>
 #include <fastly/http/body.h>
 #include <fastly/http/header.h>
@@ -40,7 +41,7 @@ namespace request {
 /// `http::select`. It can also be discarded if the request was sent for effects
 /// it might have, and the response is unimportant.
 class PendingRequest {
-
+  friend detail::AccessBridgeInternals;
   friend Request;
   friend std::pair<fastly::expected<Response>, std::vector<PendingRequest>>
   select(std::vector<PendingRequest> &reqs);
@@ -65,6 +66,7 @@ class PendingRequest {
   Request cloned_sent_req();
 
 private:
+  auto &inner() { return req; }
   rust::Box<fastly::sys::http::request::PendingRequest> req;
 
   PendingRequest(rust::Box<fastly::sys::http::request::PendingRequest> r)
@@ -147,6 +149,7 @@ select(std::vector<PendingRequest> &reqs);
 class Request {
   friend request::PendingRequest;
   friend Response;
+  friend detail::AccessBridgeInternals;
 
 public:
   /// Create a new request with the given method and URL, no headers, and an
@@ -737,6 +740,7 @@ public:
   bool is_cacheable();
 
 private:
+  auto &inner() { return req; }
   Request(rust::Box<fastly::sys::http::Request> r) : req(std::move(r)) {};
   rust::Box<fastly::sys::http::Request> req;
 };

@@ -9,5 +9,7 @@ name = "cpp-example"
 service_id = ""
 
 [local_server]
-backends.fastly.url = "https://www.fastly.com"
-backends.wikipedia.url = "https://en.wikipedia.org"
+[local_server.backends]
+fastly.url = "https://www.fastly.com"
+wikipedia.url = "https://en.wikipedia.org"
+esi-cpp-demo.url = "https://esi-cpp-demo.edgecompute.app"
