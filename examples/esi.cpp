@@ -1,3 +1,4 @@
+//! @example esi.cpp
 #include "fastly/sdk.h"
 
 int main() {
