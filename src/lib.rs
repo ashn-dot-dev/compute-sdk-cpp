@@ -14,6 +14,7 @@ use http::{
 use kv_store::*;
 use log::*;
 use secret_store::*;
+use security::*;
 
 mod backend;
 mod config_store;
@@ -25,6 +26,7 @@ mod http;
 mod kv_store;
 mod log;
 mod secret_store;
+mod security;
 
 // Unfortunately, due to some limitations with cxx, the ENTIRE bridge basically
 // has to be under a single ffi module, or cross-referencing ffi types is gonna
@@ -815,6 +817,74 @@ mod ffi {
         fn echo_stdout(&mut self, enabled: bool);
         fn echo_stderr(&mut self, enabled: bool);
         fn init(&mut self);
+    }
+
+    #[namespace = "fastly::sys::security"]
+    #[derive(Copy, Clone, Debug)]
+    #[repr(usize)]
+    pub enum InspectErrorCode {
+        DeserializeError,
+        InvalidConfig,
+        RequestError,
+        BufferSizeError,
+        Unexpected,
+    }
+
+    #[namespace = "fastly::sys::security"]
+    #[derive(Copy, Clone, Debug)]
+    pub enum InspectVerdict {
+        /// Security indicated that this request is allowed.
+        Allow,
+
+        /// Security indicated that this request should be blocked.
+        Block,
+
+        /// Security indicated that this service is not authorized to inspect a request.
+        Unauthorized,
+
+        /// Security returned an unrecognized verdict.
+        ///
+        /// This variant exists to allow for the possibility of future
+        /// additions, but should normally not be seen.
+        Other,
+    }
+
+    #[namespace = "fastly::sys::security"]
+    extern "Rust" {
+        type InspectResponse;
+        fn status(&self) -> i16;
+        fn is_redirect(&self) -> bool;
+        fn decision_ms(&self) -> u32;
+        fn redirect_url(&self, out: Pin<&mut CxxString>) -> bool;
+        fn tags(&self) -> Vec<String>;
+        fn verdict(&self) -> InspectVerdict;
+        fn unrecognized_verdict_info(&self, out: Pin<&mut CxxString>) -> bool;
+    }
+
+    #[namespace = "fastly::sys::security"]
+    extern "Rust" {
+        fn m_security_inspect_response_into_redirect(
+            response: Box<InspectResponse>,
+            mut out: Pin<&mut *mut Response>,
+        ) -> bool;
+        unsafe fn f_security_lookup(
+            request: &Request,
+            client_ip: *const CxxString,
+            corp: *const CxxString,
+            workspace: *const CxxString,
+            buffer_size: *const usize,
+            mut out: Pin<&mut *mut InspectResponse>,
+            mut err: Pin<&mut *mut InspectError>,
+        );
+    }
+
+    #[namespace = "fastly::sys::security"]
+    extern "Rust" {
+        type InspectError;
+        fn error_msg(&self, mut out: Pin<&mut CxxString>);
+        fn error_code(&self) -> InspectErrorCode;
+        fn required_buffer_size(&self, out: Pin<&mut usize>) -> bool;
+        fn f_security_inspect_error_force_symbols(x: Box<InspectError>) -> Box<InspectError>;
     }
 
     #[namespace = "fastly::sys::kv_store"]
